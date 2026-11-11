@@ -1,0 +1,21 @@
+# rugguard discover --recent 150: token  pool_id  wNEAR_in_pool
+meme.near_moki.near  # pool 8989, 0.0 wNEAR
+presale.neardrgns.near  # pool 8988, 16.6 wNEAR
+near.shadowprivacy.near  # pool 8987, 0.0 wNEAR
+moustache.moustachebaby.near  # pool 8986, 0.0 wNEAR
+token.taler-finance.near  # pool 8985, 0.0 wNEAR
+seat.tokens.sickyak1747.near  # pool 8984, 9.4 wNEAR
+aurora.token-factory.sickyak1747.near  # pool 8983, 11.7 wNEAR
+id.nsaw.near  # pool 8982, 0.0 wNEAR
+usdt.tether-token.near  # pool 8981, 0.1 wNEAR
+wnear-78a14e.nearafun.near  # pool 8980, 0.0 wNEAR
+kimshi.kimshi.near  # pool 8979, 0.0 wNEAR
+token.nspear.near  # pool 8978, 0.0 wNEAR
+core.pensoro.near  # pool 8977, 28.9 wNEAR
+elon.near-elon.near  # pool 8976, 0.0 wNEAR
+6ca890f766fdaeccd6c934da325f5f06ebc63ca9be4f5f1b44d0686af93c64a8  # pool 8975, 0.0 wNEAR
+broomy.broomcat.near  # pool 8974, 0.0 wNEAR
+nhum.nearlytrade.near  # pool 8973, 0.7 wNEAR
+ngas.near-gas.near  # pool 8963, 0.0 wNEAR
+bome.narrowcap6721.near  # pool 8962, 0.0 wNEAR
+kinu-3.nearlytrade.near  # pool 8961, 0.2 wNEAR

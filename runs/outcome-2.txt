@@ -1,0 +1,19 @@
+Rules outcome-rules-v1 (see `rugguard rules`)
+
+sinu-8.smithii.near: ALIVE
+  - Launched 4.1 days ago: first transfer into v2.ref-finance.near (tx 5o92qB4szS33XSdNoZJZB9wSmq659fpwMZ7phYxyHsbQ).
+  - Price now ≈ 283248% of launch price (constant-product estimate from the pool's token reserve: 10000000000000000000000 at launch vs 187895516395214464603 now); collapse line is 10%.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+
+dabi-7.smithii.near: ALIVE
+  - Launched 4.9 days ago: first transfer into v2.ref-finance.near (tx F9yhZdbMGafAGPfTkr9xzHriRcW8xBoiVkTQdYzXFsje).
+  - Price now ≈ 687469% of launch price (constant-product estimate from the pool's token reserve: 100000000000000000000000 at launch vs 1206072873801292194690 now); collapse line is 10%.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+
+mmli-6.smithii.near: ALIVE
+  - Launched 5.0 days ago: first transfer into v2.ref-finance.near (tx 9bSpYzGZKWxPki6KdDLoVEshYF3XppNBLvxe2rdWPcmB).
+  - Price now ≈ 151147% of launch price (constant-product estimate from the pool's token reserve: 10000000000000000000000 at launch vs 257217292882138182437 now); collapse line is 10%.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+  ! nearblocks_deployments: [nearblocks] rate limit: gave up after retries for https://api.nearblocks.io/v3/accounts/mmli-6.smithii.near/contract/deployments
+
+Stopped after 3 of 14 token(s): NearBlocks (free plan: 6 calls a minute, 333 a day) is refusing calls now. Run the same command later: everything fetched so far is cached, so it resumes where it stopped.

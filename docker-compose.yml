@@ -1,0 +1,70 @@
+# RugGuard, contained.
+#
+#   docker compose up --build        then open http://127.0.0.1:8080
+#
+# Layout:
+#   proxy (Caddy)  the only service with a published port, bound to 127.0.0.1 by default.
+#                  Adds security headers, caps request size and timeouts.
+#   api            FastAPI + UI. No published port: reachable only through the proxy on the
+#                  internal "front" network. Runs as an unprivileged user, read-only root
+#                  filesystem, no Linux capabilities, no privilege escalation. Its only
+#                  writable path is the data volume. It holds no NEAR keys.
+#   (agent)        The guard-agent demo will run as its own service with a testnet
+#                  function-call key, on its own network, and never inside "api".
+#
+# To expose a public demo, change the proxy port binding and set RUGGUARD_ADMIN_TOKEN.
+
+services:
+  api:
+    build: .
+    command: ["serve", "--host", "0.0.0.0", "--port", "8000"]
+    environment:
+      RUGGUARD_NETWORK: ${RUGGUARD_NETWORK:-mainnet}
+      NEARBLOCKS_API_KEY: ${NEARBLOCKS_API_KEY:-}
+      RUGGUARD_ADMIN_TOKEN: ${RUGGUARD_ADMIN_TOKEN:-}
+      RUGGUARD_TRUST_PROXY: "1"          # safe: only the proxy can reach this container
+      RUGGUARD_LOG_FILE: /app/data/rugguard.log
+      RUGGUARD_RATE_PER_MIN: "120"
+    volumes:
+      - rugguard-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 1.0
+    networks: [front, egress]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  proxy:
+    image: caddy:2.8-alpine
+    depends_on:
+      api:
+        condition: service_healthy
+    ports:
+      - "${RUGGUARD_BIND:-127.0.0.1}:${RUGGUARD_PORT:-8080}:8080"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+    read_only: true
+    tmpfs:
+      - /data
+      - /config
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks: [front]
+    restart: unless-stopped
+
+networks:
+  front:
+    internal: true        # no internet access on this network; proxy <-> api only
+  egress: {}              # api's route out to NEAR RPC, FastNEAR, NearBlocks
+
+volumes:
+  rugguard-data: {}

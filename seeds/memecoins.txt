@@ -1,0 +1,15 @@
+# rugguard discover --recent 400: token  pool_id  wNEAR_in_pool
+sinu-8.smithii.near  # pool 9013, 20.1 wNEAR
+dabi-7.smithii.near  # pool 9012, 5.1 wNEAR
+mmli-6.smithii.near  # pool 9011, 15.1 wNEAR
+meili-5.smithii.near  # pool 9009, 10.4 wNEAR
+olccl-4.smithii.near  # pool 9008, 17.1 wNEAR
+fuk-3.smithii.near  # pool 9005, 13.3 wNEAR
+pmoney-4.nearlytrade.near  # pool 9004, 0.0 wNEAR
+amd.amemedog.near  # pool 9002, 0.0 wNEAR
+lumos.lumoscore.near  # pool 9001, 0.3 wNEAR
+nexus.nexusdev.near  # pool 8994, 0.0 wNEAR
+nico131.tkn.near  # pool 8993, 0.0 wNEAR
+unog.near  # pool 8992, 12.6 wNEAR
+nbot.near_bot.near  # pool 8991, 0.0 wNEAR
+bmw.neardrgns.near  # pool 8990, 7.9 wN

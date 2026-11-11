@@ -1,0 +1,19 @@
+token                      outcome       score  band
+bmw.neardrgns.near         alive            70  high
+dabi-7.smithii.near        alive            70  high
+lumos.lumoscore.near       rugged           70  high
+meili-5.smithii.near       alive            70  high
+mmli-6.smithii.near        alive            70  high
+nbot.near_bot.near         rugged           70  high
+olccl-4.smithii.near       alive            70  high
+sinu-8.smithii.near        alive            70  high
+fuk-3.smithii.near         alive            40  elevated
+unog.near                  alive            21  low
+nexus.nexusdev.near        rugged           17  low
+pmoney-4.nearlytrade.near  rugged           17  low
+nico131.tkn.near           rugged           15  low
+amd.amemedog.near          rugged            3  low
+
+* = human label. Judged 14 token(s) labelled rugged/faded/alive with a score; 0 excluded (pending, spoiled, needs_review, or not scored).
+Caught 2 of 6 rugs at score >= 60 (recall 33%); false alarms 6; AUC 0.21 (0.5 = coin flip, 1.0 = perfect ranking).
+Mean score by outcome: rugged 31.9, alive 60.1

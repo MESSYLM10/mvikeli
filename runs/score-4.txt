@@ -1,0 +1,127 @@
+Score score-v2: signals use data up to 1 h after launch
+
+sinu-8.smithii.near: 70/100  HIGH  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   1.00  x10  Owner can mint, pause, set_blacklisted, transfer_ownership.
+  concentration  1.00  x15  At the cut-off the top 10 wallets held 100% of supply.
+  deployer       1.00  x10  The deployer thinos1181.near and 0 wallet(s) it seeded before launch held 100% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet thinos1181.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.0% of supply, seeded with 372.00 NEAR at launch.
+  early_buyers   0.00  x10  Nobody bought before the cut-off.
+
+dabi-7.smithii.near: 70/100  HIGH  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   1.00  x10  Owner can mint, pause, set_blacklisted, transfer_ownership.
+  concentration  1.00  x15  At the cut-off the top 10 wallets held 100% of supply.
+  deployer       1.00  x10  The deployer swiftblog5330.near and 0 wallet(s) it seeded before launch held 100% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet swiftblog5330.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.0% of supply, seeded with 374.00 NEAR at launch.
+  early_buyers   0.00  x10  1 wallet(s) bought before the cut-off; 0% of that volume went to wallets linked to the deployer, and the top 3 buyers took 100%.
+
+mmli-6.smithii.near: 70/100  HIGH  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   1.00  x10  Owner can mint, pause, set_blacklisted, transfer_ownership.
+  concentration  1.00  x15  At the cut-off the top 10 wallets held 100% of supply.
+  deployer       1.00  x10  The deployer sadfield5984.near and 0 wallet(s) it seeded before launch held 100% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet sadfield5984.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.0% of supply, seeded with 370.00 NEAR at launch.
+  early_buyers   0.00  x10  1 wallet(s) bought before the cut-off; 0% of that volume went to wallets linked to the deployer, and the top 3 buyers took 100%.
+
+meili-5.smithii.near: 70/100  HIGH  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   1.00  x10  Owner can mint, pause, set_blacklisted, transfer_ownership.
+  concentration  1.00  x15  At the cut-off the top 10 wallets held 100% of supply.
+  deployer       1.00  x10  The deployer sourbelt7061.near and 0 wallet(s) it seeded before launch held 100% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet sourbelt7061.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.0% of supply, seeded with 74.00 NEAR at launch.
+  early_buyers   0.00  x10  Nobody bought before the cut-off.
+
+olccl-4.smithii.near: 70/100  HIGH  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   1.00  x10  Owner can mint, pause, set_blacklisted, transfer_ownership.
+  concentration  1.00  x15  At the cut-off the top 10 wallets held 100% of supply.
+  deployer       1.00  x10  The deployer toughuni8251.near and 0 wallet(s) it seeded before launch held 90% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet toughuni8251.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.0% of supply, seeded with 74.00 NEAR at launch.
+  early_buyers   0.00  x10  1 wallet(s) bought before the cut-off; 0% of that volume went to wallets linked to the deployer, and the top 3 buyers took 100%.
+
+fuk-3.smithii.near: 50/100  ELEVATED  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   1.00  x10  Owner can mint, pause, set_blacklisted, transfer_ownership.
+  concentration  0.00  x15  At the cut-off the top 10 wallets held 0.0% of supply.
+  deployer       0.00  x10  The deployer smoothward1740.near and 0 wallet(s) it seeded before launch held 0.0% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet smoothward1740.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.0% of supply, seeded with 41.09 NEAR at launch.
+  early_buyers   1.00  x10  1 wallet(s) bought before the cut-off; 100% of that volume went to wallets linked to the deployer, and the top 3 buyers took 100%.
+
+pmoney-4.nearlytrade.near: 33/100  ELEVATED  (coverage 90%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   0.00  x10  No owner-power methods exported.
+  concentration  0.00  x15  At the cut-off the top 10 wallets held 2.6% of supply.
+  deployer         -    x10  Supply started in a contract (e.g. a launchpad); no deployer wallet to follow.
+  lp_control     1.00  x20  Liquidity was added by the wallet tuffguy.user.intear.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.0% of supply, seeded with 406.60 NEAR at launch.
+  early_buyers   0.00  x10  Nobody bought before the cut-off.
+
+amd.amemedog.near: 23/100  LOW  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   0.00  x10  No owner-power methods exported.
+  concentration  0.00  x15  At the cut-off the top 10 wallets held 12% of supply.
+  deployer       0.29  x10  The deployer amemedog.near and 0 wallet(s) it seeded before launch held 12% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet amemedog.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      0.00  x10  At the cut-off the pool held 88% of supply, seeded with 77.00 NEAR at launch.
+  early_buyers   0.00  x10  2 wallet(s) bought before the cut-off; 6.3% of that volume went to wallets linked to the deployer, and the top 3 buyers took 100%.
+
+lumos.lumoscore.near: 70/100  HIGH  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   0.00  x10  No owner-power methods exported.
+  concentration  1.00  x15  At the cut-off the top 10 wallets held 100% of supply.
+  deployer       1.00  x10  The deployer treasury.lumoscore.near and 0 wallet(s) it seeded before launch held 100% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet treasury.lumoscore.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.0% of supply, seeded with 0.30 NEAR at launch.
+  early_buyers   0.00  x10  Nobody bought before the cut-off.
+
+nexus.nexusdev.near: 31/100  ELEVATED  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   0.00  x10  No owner-power methods exported.
+  concentration  0.08  x15  At the cut-off the top 10 wallets held 25% of supply.
+  deployer       0.00  x10  The deployer nexus-liquidity-protocol.near and 0 wallet(s) it seeded before launch held 0% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet metallic_blob.user.intear.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.1% of supply.
+  early_buyers   0.00  x10  Nobody bought before the cut-off.
+
+nico131.tkn.near: 30/100  ELEVATED  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   0.00  x10  No owner-power methods exported.
+  concentration  0.00  x15  At the cut-off the top 10 wallets held 0% of supply.
+  deployer       0.00  x10  The deployer juaner.near and 0 wallet(s) it seeded before launch held 0% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet juaner.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.0% of supply.
+  early_buyers   0.00  x10  1 wallet(s) bought before the cut-off; 0% of that volume went to wallets linked to the deployer, and the top 3 buyers took 100%.
+
+unog.near: 36/100  ELEVATED  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   0.60  x10  Owner can nft_mint, nft_mint_cost.
+  concentration  0.00  x15  At the cut-off the top 10 wallets held 0.0% of supply.
+  deployer       0.00  x10  The deployer jollydragonroger.near and 0 wallet(s) it seeded before launch held 0% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet jollydragonroger.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      1.00  x10  At the cut-off the pool held 0.3% of supply, seeded with 0.20 NEAR at launch.
+  early_buyers   0.00  x10  Nobody bought before the cut-off.
+
+nbot.near_bot.near: 70/100  HIGH  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   0.00  x10  No owner-power methods exported.
+  concentration  1.00  x15  At the cut-off the top 10 wallets held 91% of supply.
+  deployer       1.00  x10  The deployer near_bot.near and 0 wallet(s) it seeded before launch held 90% at the cut-off.
+  lp_control     1.00  x20  Liquidity was added by the wallet near_bot.near, which holds the pool shares and can withdraw them at any time.
+  liquidity      0.76  x10  At the cut-off the pool held 8.7% of supply, seeded with 105.00 NEAR at launch.
+  early_buyers   0.69  x10  2 wallet(s) bought before the cut-off; 38% of that volume went to wallets linked to the deployer, and the top 3 buyers took 100%.
+
+bmw.neardrgns.near: 70/100  HIGH  (coverage 100%)
+  upgrade        0.00  x25  No way to change the code was found.
+  owner_powers   0.00  x10  No owner-power methods exported.
+  concentration  0.62  x15  At the cut-off the top 10 wallets held 57% of supply.
+  deployer       1.00  x10  The deployer 92154721589a3dfd41153d1e3e6fb29c5da36d38d83c2db100e8aff4bd28bdd7 and 0 wallet(s) it seeded before launch held 57% at the cut-off.
+  lp_control     0.00  x20  Liquidity was added by the contract launchpad.sickyak1747.near (a launchpad or locker), not a person's wallet.
+  liquidity      0.70  x10  At the cut-off the pool held 43% of supply, seeded with 7.61 NEAR at launch.
+  early_buyers   1.00  x10  1 wallet(s) bought before the cut-off; 100% of that volume went to wallets linked to the deployer, and the top 3 buyers took 100%.

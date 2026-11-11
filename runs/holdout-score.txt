@@ -1,0 +1,1 @@
+Score score-v2: signals use data up to 1 h after launch

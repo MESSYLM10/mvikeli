@@ -1,0 +1,23 @@
+# rugguard discover --recent 800: token  pool_id  wNEAR_in_pool
+
+dm.dogiusmaximus.near  # pool 8564, 0.0 wNEAR
+coin.ironclaw_ai.near  # pool 8563, 0.0 wNEAR
+monero.0xmr-token.near  # pool 8562, 0.0 wNEAR
+spacex.operator123.near  # pool 8560, 0.0 wNEAR
+rh.red-horse.near  # pool 8559, 0.0 wNEAR
+v.baby-neko.near  # pool 8558, 0.0 wNEAR
+ai.anth_ropic.near  # pool 8557, 0.0 wNEAR
+phoenix.pre-phoenix.near  # pool 8556, 0.0 wNEAR
+meme.aibird.near  # pool 8555, 0.0 wNEAR
+rheastrong.rheastrong.near  # pool 8554, 0.0 wNEAR
+usdoge.usdoge.near  # pool 8553, 0.0 wNEAR
+new.senderai.near  # pool 8552, 0.0 wNEAR
+nearissafe.nearissafe.near  # pool 8551, 0.0 wNEAR
+coin.faster-ai.near  # pool 8550, 0.0 wNEAR
+ironclaw.iron_claw.near  # pool 8549, 0.0 wNEAR
+near.0xf908dea11332ae3d6ab947cad6573.near  # pool 8548, 0.0 wNEAR
+token.spcx69420.near  # pool 8547, 0.0 wNEAR
+soul.tkn.near  # pool 8546, 60.0 wNEAR
+usdcc-token.gemsrock-nft.near  # pool 8542, 0.0 wNEAR
+usdcc.gemsrock-nft.near  # pool 8541, 0.0 wNEAR
+hope.tkn.near  # pool 8539, 0.0 wNEAR

@@ -1,0 +1,82 @@
+Rules outcome-rules-v1 (see `rugguard rules`)
+
+sinu-8.smithii.near: ALIVE
+  - Launched 4.1 days ago: first transfer into v2.ref-finance.near (tx 5o92qB4szS33XSdNoZJZB9wSmq659fpwMZ7phYxyHsbQ).
+  - Price now ≈ 287% of launch price (pool now 20.08 NEAR for 187895516395214464603 tokens; at launch thinos1181.near put in 372.00 NEAR for 10000000000000000000000 tokens); collapse line is 10%.
+  - Liquidity pulled: the launcher thinos1181.near took 66% of the tokens it had put in back out of the DEX within 72 h.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+
+dabi-7.smithii.near: ALIVE
+  - Launched 4.9 days ago: first transfer into v2.ref-finance.near (tx F9yhZdbMGafAGPfTkr9xzHriRcW8xBoiVkTQdYzXFsje).
+  - Price now ≈ 114% of launch price (pool now 5.15 NEAR for 1206072873801292194690 tokens; at launch swiftblog5330.near put in 374.00 NEAR for 100000000000000000000000 tokens); collapse line is 10%.
+  - Liquidity pulled: the launcher swiftblog5330.near took 98% of the tokens it had put in back out of the DEX within 72 h.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+
+mmli-6.smithii.near: ALIVE
+  - Launched 5.0 days ago: first transfer into v2.ref-finance.near (tx 9bSpYzGZKWxPki6KdDLoVEshYF3XppNBLvxe2rdWPcmB).
+  - Price now ≈ 159% of launch price (pool now 15.11 NEAR for 257217292882138182437 tokens; at launch sadfield5984.near put in 370.00 NEAR for 10000000000000000000000 tokens); collapse line is 10%.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+  ! nearblocks_deployments: [nearblocks] rate limit: gave up after retries for https://api.nearblocks.io/v3/accounts/mmli-6.smithii.near/contract/deployments
+
+meili-5.smithii.near: ALIVE
+  - Launched 5.2 days ago: first transfer into v2.ref-finance.near (tx 2A6WSaLr6k1NBDi64t2qS4nLB7LRG9bpzsyQqeMgDXhm).
+  - Price now ≈ 77% of launch price (pool now 10.44 NEAR for 18356218947943746456342 tokens; at launch sourbelt7061.near put in 74.00 NEAR for 100000000000000000000000 tokens); collapse line is 10%.
+  - Liquidity pulled: the launcher sourbelt7061.near took 1083% of the tokens it had put in back out of the DEX within 72 h.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 15 more minute(s). Cached data is still used.
+
+olccl-4.smithii.near: ALIVE
+  - Launched 5.2 days ago: first transfer into v2.ref-finance.near (tx bQoBdJQLooqkVoJDPgnS81UKNB4pAM4UwBAyWrkB1Sy).
+  - Price now ≈ 100% of launch price (pool now 17.13 NEAR for 23127989783252779789047 tokens; at launch toughuni8251.near put in 74.00 NEAR for 100000000000000000000000 tokens); collapse line is 10%.
+  - Liquidity pulled: the launcher toughuni8251.near took 358% of the tokens it had put in back out of the DEX within 72 h.
+  - Checked 3 large wallet(s); none sold 50% of its peak within 72 h.
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 15 more minute(s). Cached data is still used.
+
+fuk-3.smithii.near: ALIVE
+  - Launched 6.5 days ago: first transfer into v2.ref-finance.near (tx 5qZEvCDd442e9HrDzzFtaC1FeKLM6TqYFQcNmpJZq2ja).
+  - Price now ≈ 89% of launch price (pool now 13.31 NEAR for 911408252229801821503772 tokens; at launch smoothward1740.near put in 41.09 NEAR for 2500000000000000000000000 tokens); collapse line is 10%.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 15 more minute(s). Cached data is still used.
+
+pmoney-4.nearlytrade.near: RUGGED
+  - Launched 42.0 days ago: first transfer into v2.ref-finance.near (tx HFEpxRxzcHJqZEBT7Zeoc6UQAjTsCji36WJKXHmVhZDE).
+  - Liquidity removed: pool 9004 now holds 0.00 NEAR (rule: below 1.0 NEAR).
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 15 more minute(s). Cached data is still used.
+
+amd.amemedog.near: RUGGED
+  - Launched 6.6 days ago: first transfer into v2.ref-finance.near (tx 8vTbLvbhaRfsCoiu1kFc9ALUyQJGpLyyo7ci5k58tQwo).
+  - Liquidity removed: pool 9002 now holds 0.00 NEAR (rule: below 1.0 NEAR).
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 15 more minute(s). Cached data is still used.
+
+lumos.lumoscore.near: RUGGED
+  - Launched 7.4 days ago: first transfer into v2.ref-finance.near (tx FyuHZ2CkaKUQWeRqgZGzvL9WypX9s1DeyHWytEK4RAKR).
+  - Liquidity removed: pool 9001 now holds 0.30 NEAR (rule: below 1.0 NEAR).
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 15 more minute(s). Cached data is still used.
+
+nexus.nexusdev.near: RUGGED
+  - Launched 146.6 days ago: first transfer into v2.ref-finance.near (tx HGit3tWdBceQuuDY89tjDMb5Wb9R5hz6bGi7XxGccew5).
+  - Liquidity removed: pool 8994 now holds 0.00 NEAR (rule: below 1.0 NEAR).
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 15 more minute(s). Cached data is still used.
+
+nico131.tkn.near: RUGGED
+  - Launched 751.2 days ago: first transfer into v2.ref-finance.near (tx 9WDmJooqCRNrzkqQouoc4BLQhS7mtKoMpeMEzrNXZSP5).
+  - Liquidity removed: pool 8993 now holds 0.00 NEAR (rule: below 1.0 NEAR).
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 15 more minute(s). Cached data is still used.
+
+unog.near: ALIVE
+  - Launched 9.5 days ago: first transfer into v2.ref-finance.near (tx FwqiMSzPv9JvQjSnqduQGFJ5zVFvPUcj6HchzV9hckER).
+  - Price now ≈ 121% of launch price (pool now 12.61 NEAR for 10423297262899051674172242 tokens; at launch jollydragonroger.near put in 0.20 NEAR for 200000000000176002199994 tokens); collapse line is 10%.
+  - Liquidity pulled: the launcher jollydragonroger.near took 5000% of the tokens it had put in back out of the DEX within 72 h.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 13 more minute(s). Cached data is still used.
+
+nbot.near_bot.near: RUGGED
+  - Launched 12.4 days ago: first transfer into v2.ref-finance.near (tx D82Nm7E4RpRSYb1hhXnSVtSHf3PvTzAY8hsNC7ZrS2fz).
+  - Liquidity removed: pool 8991 now holds 0.00 NEAR (rule: below 1.0 NEAR).
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 13 more minute(s). Cached data is still used.
+
+bmw.neardrgns.near: ALIVE
+  - Launched 17.6 days ago: first transfer into v2.ref-finance.near (tx 6jAcsqXQRvjBze8RXtrK3qiQbWXKzDw5ZTWkYpJV7gmY).
+  - Price now ≈ 107% of launch price (pool now 7.86 NEAR for 4177012301315188724128123 tokens; at launch launchpad.sickyak1747.near put in 7.61 NEAR for 4318181818181818181818181 tokens); collapse line is 10%.
+  - Checked 2 large wallet(s); none sold 50% of its peak within 72 h.
+  ! nearblocks_deployments: [nearblocks] rate limit: nearblocks refused repeatedly; paused for 13 more minute(s). Cached data is still used.

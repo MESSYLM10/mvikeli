@@ -1,0 +1,37 @@
+# RugGuard reverse proxy. Plain HTTP on :8080 for local use; for a public demo replace
+# ":8080" with your domain and Caddy obtains a TLS certificate automatically.
+{
+	admin off
+	servers {
+		timeouts {
+			read_header 5s
+			read_body 10s
+			write 60s
+			idle 60s
+		}
+	}
+}
+
+:8080 {
+	request_body {
+		max_size 16KB
+	}
+
+	# "?" = set only if the app did not: the app sends a stricter policy everywhere except /docs.
+	header {
+		?Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		X-Frame-Options "DENY"
+		-Server
+	}
+
+	reverse_proxy api:8000 {
+		header_up X-Forwarded-For {remote_host}
+	}
+
+	log {
+		output stdout
+		format json
+	}
+}

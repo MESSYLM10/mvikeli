@@ -1,0 +1,50 @@
+token                                      outcome       score  band
+bmw.neardrgns.near                         alive            70  high
+dabi-7.smithii.near                        rugged           70  high
+elon.near-elon.near                        rugged           70  high
+id.nsaw.near                               rugged           70  high
+kimshi.kimshi.near                         rugged           70  high
+lumos.lumoscore.near                       alive            70  high
+meili-5.smithii.near                       rugged           70  high
+meme.near_moki.near                        rugged           70  high
+mmli-6.smithii.near                        rugged           70  high
+moustache.moustachebaby.near               rugged           70  high
+nbot.near_bot.near                         rugged           70  high
+near.shadowprivacy.near                    rugged           70  high
+olccl-4.smithii.near                       alive            70  high
+sinu-8.smithii.near                        rugged           70  high
+token.nspear.near                          rugged           70  high
+token.taler-finance.near                   rugged           70  high
+usdt.tether-token.near                     needs_review     64  high
+fuk-3.smithii.near                         alive            50  elevated
+core.pensoro.near                          alive            45  elevated
+unog.near                                  alive            36  elevated
+pmoney-4.nearlytrade.near                  rugged           33  elevated
+nexus.nexusdev.near                        needs_review     31  elevated
+nico131.tkn.near                           needs_review     30  elevated
+seat.tokens.sickyak1747.near               alive            24  low
+amd.amemedog.near                          rugged           23  low
+presale.neardrgns.near                     alive            20  low
+aurora.token-factory.sickyak1747.near      alive            20  low
+wnear-78a14e.nearafun.near                 needs_review      0  low
+ai.anth_ropic.near                         needs_review    -  
+coin.faster-ai.near                        needs_review    -  
+coin.ironclaw_ai.near                      needs_review    -  
+dm.dogiusmaximus.near                      needs_review    -  
+ironclaw.iron_claw.near                    needs_review    -  
+meme.aibird.near                           needs_review    -  
+monero.0xmr-token.near                     needs_review    -  
+near.0xf908dea11332ae3d6ab947cad6573.near  needs_review    -  
+nearissafe.nearissafe.near                 needs_review    -  
+new.senderai.near                          needs_review    -  
+phoenix.pre-phoenix.near                   needs_review    -  
+rh.red-horse.near                          needs_review    -  
+rheastrong.rheastrong.near                 needs_review    -  
+spacex.operator123.near                    needs_review    -  
+token.spcx69420.near                       needs_review    -  
+usdoge.usdoge.near                         needs_review    -  
+v.baby-neko.near                           needs_review    -  
+
+* = human label. Judged 24 token(s) labelled rugged/faded/alive with a score; 21 excluded (pending, spoiled, needs_review, or not scored).
+Caught 13 of 15 rugs at score >= 60 (recall 87%); false alarms 3; AUC 0.76 (0.5 = coin flip, 1.0 = perfect ranking).
+Mean score by outcome: rugged 64.4, alive 45.0

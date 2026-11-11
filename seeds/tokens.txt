@@ -1,0 +1,6 @@
+# One NEP-141 contract per line. Well-known tokens first, as a sanity baseline.
+wrap.near
+token.v2.ref-finance.near
+usdt.tether-token.near
+meta-pool.near
+# Add launchpad memecoins below once meme.cooking token IDs are confirmed (day 2).

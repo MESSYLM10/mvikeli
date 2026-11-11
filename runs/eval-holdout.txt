@@ -1,0 +1,26 @@
+Evaluating only the 20 token(s) in seeds/holdout.txt
+token                                                             outcome       score  band
+6ca890f766fdaeccd6c934da325f5f06ebc63ca9be4f5f1b44d0686af93c64a8  rugged           70  high
+elon.near-elon.near                                               rugged           70  high
+id.nsaw.near                                                      rugged           70  high
+kimshi.kimshi.near                                                rugged           70  high
+meme.near_moki.near                                               rugged           70  high
+moustache.moustachebaby.near                                      rugged           70  high
+near.shadowprivacy.near                                           rugged           70  high
+ngas.near-gas.near                                                rugged           70  high
+token.nspear.near                                                 rugged           70  high
+token.taler-finance.near                                          rugged           70  high
+usdt.tether-token.near                                            needs_review     64  high
+core.pensoro.near                                                 alive            45  elevated
+nhum.nearlytrade.near                                             alive            33  elevated
+broomy.broomcat.near                                              rugged           31  elevated
+seat.tokens.sickyak1747.near                                      alive            24  low
+presale.neardrgns.near                                            alive            20  low
+aurora.token-factory.sickyak1747.near                             alive            20  low
+wnear-78a14e.nearafun.near                                        needs_review      0  low
+bome.narrowcap6721.near                                           rugged          -  
+kinu-3.nearlytrade.near                                           rugged          -  
+
+* = human label. Judged 16 token(s) labelled rugged/faded/alive with a score; 4 excluded (pending, spoiled, needs_review, or not scored).
+Caught 10 of 11 rugs at score >= 60 (recall 91%); false alarms 0; AUC 0.96 (0.5 = coin flip, 1.0 = perfect ranking).
+Mean score by outcome: rugged 66.5, alive 28.5

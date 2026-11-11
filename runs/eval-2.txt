@@ -1,0 +1,15 @@
+token                      outcome       score  band
+dabi-7.smithii.near        alive            70  high
+lumos.lumoscore.near       needs_review     70  high
+meili-5.smithii.near       needs_review     70  high
+mmli-6.smithii.near        alive            70  high
+olccl-4.smithii.near       needs_review     70  high
+sinu-8.smithii.near        alive            70  high
+fuk-3.smithii.near         needs_review     40  elevated
+nexus.nexusdev.near        needs_review     17  low
+pmoney-4.nearlytrade.near  needs_review     17  low
+nico131.tkn.near           needs_review     15  low
+amd.amemedog.near          needs_review     13  low
+
+* = human label. Judged 3 token(s) labelled rugged/faded/alive with a score; 8 excluded (pending, spoiled, needs_review, or not scored).
+Need at least one rugged and one non-rugged token to measure detection.

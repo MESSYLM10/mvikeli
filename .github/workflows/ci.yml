@@ -1,0 +1,50 @@
+name: ci
+
+# Runs the Python and contract tests, and builds the guard vault's .wasm so it can be downloaded
+# from the run's "Artifacts" section (no local Rust toolchain needed to deploy).
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[api,dev]"
+      - run: python -m pytest -q
+
+  guard-vault:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: contracts/guard-vault
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: contracts/guard-vault
+      - name: Contract tests
+        run: cargo test
+      - name: Install cargo-near
+        run: |
+          curl --proto '=https' --tlsv1.2 -LsSf \
+            https://github.com/near/cargo-near/releases/latest/download/cargo-near-installer.sh | sh \
+          || cargo install --locked cargo-near
+      - name: Build wasm
+        run: cargo near build non-reproducible-wasm
+      - run: ls -l target/near/ && sha256sum target/near/*.wasm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: guard-vault-wasm
+          path: contracts/guard-vault/target/near/*.wasm

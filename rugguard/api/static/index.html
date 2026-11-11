@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RugGuard</title>
+  <link rel="stylesheet" href="/static/app.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="bar">
+    <a class="brand" href="/">RugGuard</a>
+    <form id="lookup" class="lookup" autocomplete="off">
+      <label for="token" class="visually-hidden">Token contract ID</label>
+      <input id="token" name="token" placeholder="Token contract ID, e.g. wrap.near" spellcheck="false"
+             autocapitalize="off" maxlength="64" required>
+      <button type="submit">Check token</button>
+    </form>
+    <p class="net" id="net"></p>
+  </header>
+
+  <main class="layout">
+    <section class="sheet" id="report" aria-live="polite">
+      <div class="empty" id="empty">
+        <h1>Who can change this token, and who can dump it?</h1>
+        <p>Enter a NEAR token's contract ID to see whether anyone can still replace its code,
+          how its supply is spread, and what happened to it after launch.</p>
+        <p class="hint">Not sure where to start? Scan the newest pools below to list recent launches.</p>
+      </div>
+      <div id="token-report" hidden>
+        <div class="title-row">
+          <h1 class="token-id" id="r-id"></h1>
+          <p class="token-meta" id="r-meta"></p>
+        </div>
+        <section class="score" id="r-score" hidden></section>
+        <div id="r-verdicts"></div>
+        <div class="actions">
+          <button type="button" id="btn-score">Score this token</button>
+          <button type="button" id="btn-collect" class="secondary">Collect full snapshot</button>
+          <button type="button" id="btn-outcome" class="secondary">Run post-mortem</button>
+          <p class="action-note" id="action-note"></p>
+        </div>
+        <section class="postmortem" id="r-postmortem" hidden>
+          <h2>After launch</h2>
+          <div id="r-outcome"></div>
+        </section>
+      </div>
+    </section>
+
+    <aside class="rail">
+      <section>
+        <h2>Queue</h2>
+        <p class="rail-note">Jobs that call NearBlocks run one at a time to stay within its limits.</p>
+        <ol class="jobs" id="jobs"></ol>
+      </section>
+      <section id="activity-section">
+        <h2>Activity</h2>
+        <ol class="log" id="log"></ol>
+      </section>
+    </aside>
+  </main>
+
+  <section class="band" id="outcomes-section">
+    <div class="band-head">
+      <h2>Post-mortems</h2>
+      <p id="agreement" class="agreement"></p>
+    </div>
+    <p id="evaluation" class="evaluation"></p>
+    <div class="table-wrap">
+      <table class="outcomes">
+        <thead><tr><th scope="col">Token</th><th scope="col">RugGuard says</th>
+          <th scope="col">Reviewer says</th><th scope="col">Match</th></tr></thead>
+        <tbody id="outcomes"></tbody>
+      </table>
+    </div>
+    <form id="review" class="review" hidden>
+      <h3 id="review-title"></h3>
+      <div class="review-fields">
+        <label>Your label
+          <select id="review-label" required></select>
+        </label>
+        <label class="grow">Why
+          <input id="review-reason" minlength="3" maxlength="500" required
+                 placeholder="e.g. slow bleed over two weeks, no large sells">
+        </label>
+        <label id="review-key-wrap" hidden>Admin key
+          <input id="review-key" type="password" autocomplete="off">
+        </label>
+        <button type="submit">Save review</button>
+      </div>
+      <p class="form-note" id="review-note"></p>
+    </form>
+  </section>
+
+  <section class="band">
+    <div class="band-head">
+      <h2>Recent launches</h2>
+      <form id="discover" class="discover">
+        <label>Scan the newest <input id="discover-n" type="number" min="10" max="2000" value="300"> Rhea pools</label>
+        <button type="submit" class="secondary">Scan pools</button>
+      </form>
+    </div>
+    <p class="rail-note">Pools are numbered in the order they were created, so the newest pools are the newest
+      launches. Thin pools are where rugs and fades end up.</p>
+    <ol class="discovered" id="discovered"></ol>
+  </section>
+
+  <footer class="foot">
+    RugGuard shows risk signals, not accusations. Data from NEAR RPC, FastNEAR and Rhea.
+    Powered by Nearblocks.io APIs.
+    <a href="/docs">API reference</a>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,54 @@
+Rules outcome-rules-v1 (see `rugguard rules`)
+
+sinu-8.smithii.near: ALIVE
+  - Launched 3.8 days ago: first transfer into v2.ref-finance.near (tx ERXMWEXR9Z4ZhUquNd4JhAPQdtpCawUf5okPkWP887qC).
+  - Price now ≈ 435% of launch price (constant-product estimate from the pool's token reserve: 392000000000000000000 at launch vs 187895516395214464603 now); collapse line is 10%.
+  - Checked 1 large wallet(s); none sold 50% of its peak within 72 h.
+
+dabi-7.smithii.near: NEEDS_REVIEW
+  - A pool lists the token but no transfer into it is in the history; check the data.
+
+mmli-6.smithii.near: NEEDS_REVIEW
+  - Transfer history does not reach the launch yet; re-run with a higher --max-pages.
+  ! transfer_history: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/fts/mmli-6.smithii.near/txns?limit=100: HTTP 429
+  ! nearblocks_deployments: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/accounts/mmli-6.smithii.near/contract/deployments: HTTP 429
+
+meili-5.smithii.near: NEEDS_REVIEW
+  - Transfer history does not reach the launch yet; re-run with a higher --max-pages.
+  ! transfer_history: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/fts/meili-5.smithii.near/txns?limit=100: HTTP 429
+  ! nearblocks_deployments: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/accounts/meili-5.smithii.near/contract/deployments: HTTP 429
+
+olccl-4.smithii.near: NEEDS_REVIEW
+  - Transfer history does not reach the launch yet; re-run with a higher --max-pages.
+  ! transfer_history: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/fts/olccl-4.smithii.near/txns?limit=100: HTTP 429
+  ! nearblocks_deployments: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/accounts/olccl-4.smithii.near/contract/deployments: HTTP 429
+
+fuk-3.smithii.near: NEEDS_REVIEW
+  - Transfer history does not reach the launch yet; re-run with a higher --max-pages.
+  ! transfer_history: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/fts/fuk-3.smithii.near/txns?limit=100: HTTP 429
+  ! nearblocks_deployments: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/accounts/fuk-3.smithii.near/contract/deployments: HTTP 429
+
+pmoney-4.nearlytrade.near: NEEDS_REVIEW
+  - Transfer history does not reach the launch yet; re-run with a higher --max-pages.
+  ! transfer_history: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/fts/pmoney-4.nearlytrade.near/txns?limit=100: HTTP 429
+  ! nearblocks_deployments: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/accounts/pmoney-4.nearlytrade.near/contract/deployments: HTTP 429
+
+amd.amemedog.near: NEEDS_REVIEW
+  - Transfer history does not reach the launch yet; re-run with a higher --max-pages.
+  ! transfer_history: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/fts/amd.amemedog.near/txns?limit=100: HTTP 429
+  ! nearblocks_deployments: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/accounts/amd.amemedog.near/contract/deployments: HTTP 429
+
+lumos.lumoscore.near: NEEDS_REVIEW
+  - Transfer history does not reach the launch yet; re-run with a higher --max-pages.
+  ! transfer_history: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/fts/lumos.lumoscore.near/txns?limit=100: HTTP 429
+  ! nearblocks_deployments: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/accounts/lumos.lumoscore.near/contract/deployments: HTTP 429
+
+nexus.nexusdev.near: NEEDS_REVIEW
+  - Transfer history does not reach the launch yet; re-run with a higher --max-pages.
+  ! transfer_history: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/fts/nexus.nexusdev.near/txns?limit=100: HTTP 429
+  ! nearblocks_deployments: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/accounts/nexus.nexusdev.near/contract/deployments: HTTP 429
+
+nico131.tkn.near: NEEDS_REVIEW
+  - Transfer history does not reach the launch yet; re-run with a higher --max-pages.
+  ! transfer_history: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/fts/nico131.tkn.near/txns?limit=100: HTTP 429
+  ! nearblocks_deployments: [nearblocks] gave up after retries for https://api.nearblocks.io/v3/accounts/nico131.tkn.near/contract/deployments: HTTP 429

@@ -1,0 +1,18 @@
+1 wallet(s) traded 3 or more of the 14 stored tokens.
+  normalherb1811.near                          3 tokens: fuk-3.smithii.near, meili-5.smithii.near, sinu-8.smithii.near
+
+Share of each token's traders that belong to this group:
+  meili-5.smithii.near                 1 of 4    traders  25%
+  sinu-8.smithii.near                  1 of 11   traders  9%
+  fuk-3.smithii.near                   1 of 12   traders  8%
+  amd.amemedog.near                    0 of 2    traders  0%
+  bmw.neardrgns.near                   0 of 3    traders  0%
+  dabi-7.smithii.near                  0 of 3    traders  0%
+  lumos.lumoscore.near                 0 of 2    traders  0%
+  mmli-6.smithii.near                  0 of 8    traders  0%
+  nbot.near_bot.near                   0 of 4    traders  0%
+  nexus.nexusdev.near                  0 of 1    traders  0%
+  nico131.tkn.near                     0 of 4    traders  0%
+  olccl-4.smithii.near                 0 of 5    traders  0%
+  pmoney-4.nearlytrade.near            0 of 19   traders  0%
+  unog.near                            0 of 1    traders  0%
