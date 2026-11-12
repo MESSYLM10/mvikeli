@@ -222,3 +222,16 @@ def test_to_yocto():
     for bad in ("", "-1", "1e3", "1.2.3", "abc"):
         with pytest.raises(ValueError):
             to_yocto(bad)
+
+
+def test_describe_keys_for_an_agent_account():
+    from rugguard.cli import describe_keys
+    fc = {"public_key": "ed25519:HxSzPz6n2YFf25jsG9XYQyJGxZ9NzXbxkLgVdcMjYwtx", "permission": "FunctionCall",
+          "is_full": False, "receiver_id": "vault.rugguard-jd.testnet", "method_names": ["request_swap"],
+          "allowance": str(5 * 10**23)}
+    verdict, lines = describe_keys("agent.rugguard-jd.testnet", [fc])
+    assert verdict.startswith("No full-access key") and "vault.rugguard-jd.testnet" in verdict
+    assert "only request_swap on vault.rugguard-jd.testnet" in lines[0] and "0.5 NEAR" in lines[0]
+    full = {**fc, "permission": "FullAccess", "is_full": True, "receiver_id": None, "method_names": []}
+    verdict, _ = describe_keys("agent.rugguard-jd.testnet", [fc, full])
+    assert verdict.startswith("1 full-access key")

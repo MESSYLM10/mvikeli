@@ -67,7 +67,7 @@ near account delete-keys agent.rugguard-demo.testnet public-keys ed25519:<THE_FU
   network-config testnet sign-with-keychain send
 
 # RugGuard's own key check proves it: the agent has a FunctionCall key and nothing else
-RUGGUARD_NETWORK=testnet python3 -m rugguard surface agent.rugguard-demo.testnet
+RUGGUARD_NETWORK=testnet python3 -m rugguard keys agent.rugguard-demo.testnet
 ```
 
 ## Demo

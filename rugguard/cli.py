@@ -107,6 +107,50 @@ def cmd_surface(settings: Settings, args: argparse.Namespace) -> int:
     return 0 if not errors else 2
 
 
+def describe_keys(account: str, keys: list[dict]) -> tuple[str, list[str]]:
+    """What an account's keys allow, in plain words, and a one-line verdict for an AI agent's account."""
+    lines, full = [], 0
+    for k in keys:
+        if k["is_full"]:
+            full += 1
+            lines.append(f"{k['public_key'][:20]}...  FULL ACCESS: can move all funds, deploy code, add keys")
+            continue
+        methods = ", ".join(k["method_names"]) or "any non-payable method"
+        allowance = k.get("allowance")
+        gas = "unlimited gas allowance" if allowance is None else f"gas allowance {int(allowance) / 10**24:g} NEAR"
+        lines.append(f"{k['public_key'][:20]}...  {k['permission']}: only {methods} on {k['receiver_id']}; "
+                     f"{gas}; cannot attach deposits or transfer NEAR")
+    if not keys:
+        verdict = "No keys: nobody can sign for this account."
+    elif full:
+        verdict = f"{full} full-access key(s): whoever holds one controls everything on {account}."
+    else:
+        targets = sorted({k["receiver_id"] for k in keys if k["receiver_id"]})
+        verdict = (f"No full-access key: {account} can only call {', '.join(targets)} as listed, "
+                   "and cannot move its funds or deploy code on its own.")
+    return verdict, lines
+
+
+def cmd_keys(settings: Settings, args: argparse.Namespace) -> int:
+    args.account = _valid([args.account])[0]
+    c = Collector(settings, _open(settings))
+    errors: list = []
+    keys = c._try(errors, "view_access_key_list", lambda: c.rpc.view_access_key_list(args.account))
+    if keys is None:
+        print(f"Could not read the keys of {args.account}: {errors[0]['error'][:200] if errors else ''}")
+        return 2
+    verdict, lines = describe_keys(args.account, keys)
+    if args.json:
+        print(json.dumps({"account": args.account, "network": settings.network, "verdict": verdict,
+                          "keys": keys}, indent=2))
+        return 0
+    print(f"{args.account} ({settings.network}): {len(keys)} key(s)")
+    for line in lines:
+        print("  " + line)
+    print(verdict)
+    return 0
+
+
 def cmd_report(settings: Settings, args: argparse.Namespace) -> int:
     args.token = _valid([args.token])[0]
     db = _open(settings)
@@ -552,6 +596,11 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("token")
     s.add_argument("--json", action="store_true")
     s.set_defaults(fn=cmd_surface)
+
+    k = sub.add_parser("keys", help="what an account's access keys allow (e.g. prove an AI agent has no full-access key)")
+    k.add_argument("account")
+    k.add_argument("--json", action="store_true")
+    k.set_defaults(fn=cmd_keys)
 
     r = sub.add_parser("report", help="show the latest stored scores for a token")
     r.add_argument("token")
