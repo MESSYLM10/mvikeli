@@ -141,6 +141,8 @@ def test_evaluate_counts_catches_and_false_alarms(tmp_path):
     assert (ev["judged"], ev["excluded"], ev["rugged"]) == (4, 1, 2)
     assert (ev["caught"], ev["false_alarms"]) == (1, 1)
     assert ev["auc"] == 0.75        # 3 of 4 rugged/non-rugged pairs ranked correctly
+    db.put_review("r2.near", "faded", "arbitrage, not a pull", None)
+    assert evaluate(db)["rugged"] == 1 and evaluate(db, use_human=False)["rugged"] == 2
     sub = evaluate(db, {"r1.near", "f1.near"})          # e.g. the holdout set only
     assert (sub["judged"], sub["caught"], sub["false_alarms"], sub["auc"]) == (2, 1, 0, 1.0)
 

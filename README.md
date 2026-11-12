@@ -1,7 +1,7 @@
 # RugGuard
 
 **Rug-pull and dump-risk signals for NEAR NEP-141 tokens.** Built for the NEAR Hackathon (Nov 2026),
-tracks: *AI Security & Defense* (primary) and *Memecoins With Mechanics*.
+track: *AI Security & Defense*.
 
 RugGuard checks a token before you (or your AI agent) buy it, and explains its verdict in plain words.
 Its headline check is NEAR-specific: the **upgrade surface**, meaning whether anyone can still replace the
@@ -24,6 +24,64 @@ per-token CSV and Markdown reports to `runs/`, and lists the testnet transaction
 The pack includes the cached API responses, so stored scores can be re-computed offline:
 `RUGGUARD_DB=data/demo.db RUGGUARD_OFFLINE=1 python -m rugguard score bome.narrowcap6721.near`.
 `docker compose up --build` serves the same demo at http://127.0.0.1:8080.
+
+## Results
+
+**Question:** using only what is visible in the first hour after launch, does RugGuard's score separate
+NEAR memecoins that were later rugged from those that were not?
+
+**Method.** Outcome labels come from versioned rules (`outcome-rules-v2`, below), not from the score.
+The score sees only data up to launch + 1 h; a test checks that later events cannot change it. Rules
+and weights were tuned on a 14-token **dev set**, then frozen. The **holdout** is the 20 newest Rhea
+launches not in the dev set (`discover --exclude`), picked by launch order, not by outcome. A person
+then checked 6 holdout labels by hand on NearBlocks (`timeline` + `review`); human labels override the
+rules in `evaluate`. "Caught" means a score of 60 or more.
+
+| | Dev set (tuned on) | **Holdout, rule labels** | **Holdout, after human review** |
+|---|---|---|---|
+| Tokens judged | 12 | 18 | 17 |
+| Rugs caught (score ≥ 60) | 5 of 7 | **11 of 13 (85%)** | **11 of 12 (92%)** |
+| False alarms | 3 of 5 | **0 of 5** | **0 of 5** |
+| AUC (0.5 = coin flip) | 0.50 | **0.95** | **0.97** |
+
+**Against simpler rules** (holdout, rule labels): flagging every token catches all 13 rugs with 5 of 5
+false alarms. The best single signals catch 11–12 rugs but with 2–3 false alarms each (AUC 0.68–0.90:
+"a wallet added the liquidity" 0.76, "top wallets hold most of the supply" 0.87, "first-hour buying is
+concentrated or linked" 0.90). The combined score matches their recall with no false alarms. With only
+5 surviving tokens, that difference is two to three tokens.
+
+**Human review** (6 holdout tokens, chosen to be hard: both misses and the highest-scoring survivor):
+on rugged-or-not, the reviewer and the rules agreed on 4 of 5 tokens both could judge (κ 0.55, small
+sample). Every token the rules called rugged that the reviewer checked showed a visible liquidity pull
+by the wallet that seeded the pool, from 25 minutes (`bome.narrowcap6721.near`) to two days
+(`meme.near_moki.near`) after launch. The one disagreement, `kinu-3.nearlytrade.near`, exposed a flaw in
+the labelling rules (below), not in the score.
+
+**Read with care.**
+- Small samples: 13 rugs and 5 survivors in the holdout. Rates are indicative, not established.
+- The dev set did much worse (AUC 0.50): it was chosen to contain hard cases, such as launchpad tokens
+  and small honest pools, and three of its survivors score 70.
+- Most rugs score exactly 70 because of the red-flag floor: in practice the score behaves close to a
+  yes/no rule ("one wallet group holds the supply against a thin pool").
+- **Known labelling flaw:** when a token's main liquidity sits in a Rhea DCL pool, an arbitrage bot's
+  first deposit into the v2 pool can be mistaken for the launch, and its trades for a liquidity pull
+  (`kinu-3`). The rules stay frozen at v2; this is the first fix for v3, which would need a fresh holdout.
+- One human-confirmed rug, `broomy.broomcat.near`, scored 31: the score misses it.
+
+Reproduce: `python -m rugguard demo` prints these numbers offline (rule labels and after human review)
+and writes the per-token CSV and report for each set to `runs/`; `evaluate --rules-only` ignores the
+human reviews.
+
+## Guard vault: an AI agent that cannot buy a rug
+
+`contracts/guard-vault` is a NEAR contract for the AI Security track: the AI agent holds only a
+function-call key that can call the vault's `request_swap`. Function-call keys cannot attach deposits, so
+the agent cannot swap on its own; the vault swaps for it on Rhea, and first refuses when RugGuard's posted
+score is 60 or more, when no fresh score exists (fail closed), or when the swap is over the per-swap or
+daily limit. Refusals are recorded on-chain with the score and evidence. RugGuard posts scores as the
+vault's oracle (`rugguard guard post-score`). Build, deploy and demo steps: `contracts/guard-vault/README.md`.
+
+Verified on testnet: the agent's request to buy a token scored 90 was refused on-chain (`HIGH_RISK`), a token scored 20 was swapped on Rhea through the vault, and a 2.5 wNEAR request over the 2 wNEAR limit was refused; transaction links are in the contract README.
 
 ## What it checks today
 
@@ -193,7 +251,7 @@ rugguard forget some.meme.near                    # remove a token's outcomes an
 
 Labels (outcome-rules-v2), checked in this order:
 
-| Label | Rule (outcome-rules-v1) |
+| Label | Rule |
 | --- | --- |
 | `needs_review` | History incomplete, price can't be measured, a required source failed, or the token first traded more than 90 days ago (not a launch) |
 | `spoiled` | Never reached a trading pool (e.g. a meme.cooking auction under its soft cap) |
@@ -243,7 +301,7 @@ rugguard/
 ├── http.py              retrying JSON client + SQLite response cache + offline mode
 ├── sources/
 │   ├── rpc.py           NEAR JSON-RPC: view_account, view_access_key_list, view_code, NEP-141 views
-│   ├── fastnear.py      FastNEAR /v1/ft/{token}/top holders
+│   ├── fastnear.py      FastNEAR top holders + account-centric Transfers API
 │   ├── nearblocks.py    NearBlocks v3: FT details, holder/transfer counts, transfers, deployments
 │   └── rhea.py          Rhea (Ref) v2.ref-finance.near pools containing the token
 ├── analysis/
@@ -255,6 +313,10 @@ rugguard/
 │   └── score.py         combined 0-100 score from data up to the cut-off, AUC
 ├── postmortem.py        history + pools + deployments + holder checks → outcome
 ├── scoring.py          score pipeline and evaluation
+├── report.py           evaluation CSV + Markdown report, simpler-rule baselines
+├── timeline.py         pool activity with seed / pull / round trips marked, for human labelling
+├── demo.py             offline demo pack (pack / unpack) and the testnet guard transactions
+├── guard.py            guard vault oracle and agent calls through near-cli-rs
 ├── api/                FastAPI app, job queue, static UI (no inline script)
 ├── validate.py         NEAR account-ID validation for every input
 ├── logs.py             JSON operational logs + in-memory ring for the UI
@@ -262,20 +324,23 @@ rugguard/
 ├── storage/db.py
 ├── collect.py           one token → one snapshot + scores; per-source error capture
 └── cli.py
-tests/                   offline tests: synthetic WASM binaries + fake NEAR/FastNEAR/NearBlocks APIs
-seeds/tokens.txt
+contracts/guard-vault/    Rust (near-sdk 5) vault: risk + spending checks before any swap; 12 unit tests
+demo/rugguard-demo.db.gz  packed database for the offline demo
+tests/                    offline tests: synthetic WASM binaries + fake NEAR/FastNEAR/NearBlocks APIs
+seeds/                    token lists: memecoins.txt (dev set), holdout.txt, tokens.txt
 ```
 
 ## Data model
 
 `raw_responses` (cache) · `tokens` · `snapshots` · `account_state` · `access_keys` · `contract_code`
 (deduplicated by code hash) · `holders` · `token_stats` · `ft_transfers` · `deployments` · `pools` ·
-`risk_scores`. See `rugguard/storage/schema.sql`.
+`risk_scores` · `history_runs` · `outcomes` · `outcome_reviews`. See `rugguard/storage/schema.sql`.
 
 ## Tests
 
 ```bash
-pip install pytest && python -m pytest -q
+pip install -e ".[api,dev]" && python -m pytest -q       # 123 tests
+cd contracts/guard-vault && cargo test                    # 12 tests (needs Rust)
 ```
 
 The suite runs fully offline: it builds real WebAssembly binaries with chosen host-function imports and
@@ -301,18 +366,18 @@ With pacing, each token costs about 30–40 s of NearBlocks time; `--no-nearbloc
 
 ## Known limits
 
-- An exported upgrade method proves a *capability*, not who can trigger it; medium-band code findings need a human look at the method's access checks.
+- The holdout is small (18 judged tokens); see Results for the caveats on every number.
+- Outcome labels misread tokens whose main liquidity is in a Rhea DCL pool (arbitrage looks like a pull).
+- An exported upgrade method proves a *capability*, not who can trigger it; code findings need a human look at the method's access checks.
 - Host-function imports do not discriminate on NEAR (near-sdk links them all), so the code check relies on exported method names, which can be renamed.
-- Method-name hints can be evaded by renaming.
-- NearBlocks v3 response envelopes are parsed defensively and raw bodies are always stored; field names are to be confirmed against live responses.
-- Earliest-buyer clustering and liquidity scoring are on the roadmap (see below).
+- History from FastNEAR is rebuilt from the accounts that matter (pool, launcher, early buyers, top holders), not every transfer of the token.
+- The guard vault's scores are posted by one oracle account; testnet tokens in the demo are stand-ins carrying the scores of named mainnet tokens.
 
-## Roadmap to submission (14 Nov 2026)
+## What would come next
 
-1. Funding-trail collection and early-buyer clustering
-2. Weighted 0–100 score across six signals; small HTTP API
-3. Guard agent holding only a function-call key, blocking swaps above a threshold
-4. "Honest memecoin" NEP-141 contract: locked, vested team share, sell-rate limit
+1. Outcome rules v3: follow liquidity across Rhea v2 and DCL pools; then a fresh holdout.
+2. Score the remaining blind spot: wallet-provided liquidity on launchpad tokens whose supply is spread out.
+3. Several independent oracles for the guard vault, and scores refreshed automatically on new launches.
 
 ## Sources
 
@@ -324,14 +389,3 @@ With pacing, each token costs about 30–40 s of NearBlocks time; `--no-nearbloc
 - DEX (Rhea / Ref Finance): https://docs.near.org/primitives/dex
 
 Powered by Nearblocks.io APIs.
-
-## Guard vault: an AI agent that cannot buy a rug
-
-`contracts/guard-vault` is a NEAR contract for the AI Security track: the AI agent holds only a
-function-call key that can call the vault's `request_swap`. Function-call keys cannot attach deposits, so
-the agent cannot swap on its own; the vault swaps for it on Rhea, and first refuses when RugGuard's posted
-score is 60 or more, when no fresh score exists (fail closed), or when the swap is over the per-swap or
-daily limit. Refusals are recorded on-chain with the score and evidence. RugGuard posts scores as the
-vault's oracle (`rugguard guard post-score`). Build, deploy and demo steps: `contracts/guard-vault/README.md`.
-
-Verified on testnet: the agent's request to buy a token scored 90 was refused on-chain (`HIGH_RISK`), a token scored 20 was swapped on Rhea through the vault, and a 2.5 wNEAR request over the 2 wNEAR limit was refused; transaction links are in the contract README.

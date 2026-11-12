@@ -286,7 +286,9 @@ def cmd_score(settings: Settings, args: argparse.Namespace) -> int:
 def cmd_evaluate(settings: Settings, args: argparse.Namespace) -> int:
     db = _open(settings)
     only = set(_tokens_from(args)) if args.seeds else None
-    ev = evaluate(db, only)
+    ev = evaluate(db, only, use_human=not args.rules_only)
+    if args.rules_only:
+        print("Using the rules' labels only (human reviews ignored)")
     if only:
         print(f"Evaluating only the {len(only)} token(s) in {args.seeds}")
     if not ev["rows"]:
@@ -622,9 +624,14 @@ def cmd_demo(settings: Settings, args: argparse.Namespace) -> int:
         ev = evaluate(db, only)
         title = {"holdout": "Holdout (never used for tuning)", "dev": "Dev set (rules tuned here)"}.get(name, "All")
         print(f"\n{title}: {ev['judged']} judged, {ev['excluded']} excluded")
-        if ev["auc"] is not None:
-            print(f"  caught {ev['caught']} of {ev['rugged']} rugs at score >= {ev['threshold']:.0f}; "
-                  f"false alarms {ev['false_alarms']} of {ev['judged'] - ev['rugged']}; AUC {ev['auc']:.2f}")
+        for tag, e in (("rule labels", evaluate(db, only, use_human=False)), ("after human review", ev)):
+            if e["auc"] is None:
+                continue
+            reviewed = sum(r["label_source"] == "human" for r in e["rows"])
+            if tag == "after human review" and not reviewed:
+                continue
+            print(f"  {tag:<19} caught {e['caught']} of {e['rugged']} rugs at score >= {e['threshold']:.0f}; "
+                  f"false alarms {e['false_alarms']} of {e['judged'] - e['rugged']}; AUC {e['auc']:.2f}")
         stem = Path(args.runs) / f"demo-{name}"
         csv_path, md_path = write_report(db, ev, stem, name, "rugguard " + " ".join(args.argv))
         print(f"  report: {md_path} (per-token data: {csv_path})")
@@ -771,6 +778,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     ev = sub.add_parser("evaluate", help="scores against post-mortem outcomes: recall, false alarms, AUC")
     ev.add_argument("--seeds", help="evaluate only the tokens in this seeds file (e.g. the holdout set)")
+    ev.add_argument("--rules-only", action="store_true", help="ignore human reviews; use the rules' labels")
     ev.add_argument("--out", help="file stem for the CSV and Markdown report (default runs/eval-<set>-<UTC time>)")
     ev.add_argument("--no-files", action="store_true", help="print only; do not write the CSV and report")
     ev.set_defaults(fn=cmd_evaluate, tokens=[])

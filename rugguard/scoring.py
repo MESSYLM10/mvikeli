@@ -73,19 +73,20 @@ def run_score(c: Collector, token_id: str, rules: ScoreRules | None = None, page
 EVAL_LABELS = ("rugged", "faded", "alive")
 
 
-def evaluate(db, only: set[str] | None = None) -> dict:
+def evaluate(db, only: set[str] | None = None, use_human: bool = True) -> dict:
     """Join each token's latest total score with its outcome (the human label wins when present)."""
     rows = []
     for r in db.outcome_table():
         if only is not None and r["token_id"] not in only:
             continue
-        label = r["human_label"] or r["auto_label"]
+        human = r["human_label"] if use_human else None
+        label = human or r["auto_label"]
         s = db.query("""SELECT rs.score, rs.band, rs.facts_json FROM risk_scores rs
                         JOIN snapshots sn ON sn.snapshot_id = rs.snapshot_id
                         WHERE sn.token_id = ? AND rs.kind = 'total' ORDER BY rs.score_id DESC LIMIT 1""",
                      (r["token_id"],))
-        rows.append({"token_id": r["token_id"], "label": label, "label_source": "human" if r["human_label"] else "auto",
-                     "human_reason": r["reason"] if r["human_label"] else None,
+        rows.append({"token_id": r["token_id"], "label": label, "label_source": "human" if human else "auto",
+                     "human_reason": r["reason"] if human else None,
                      "score": s[0]["score"] if s else None, "band": s[0]["band"] if s else None})
     judged = [r for r in rows if r["label"] in EVAL_LABELS and r["score"] is not None]
     rugged = [r["score"] for r in judged if r["label"] == "rugged"]
