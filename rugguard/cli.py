@@ -151,6 +151,26 @@ def cmd_keys(settings: Settings, args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_timeline(settings: Settings, args: argparse.Namespace) -> int:
+    """Pool activity in order, with seed and pull marked, for human labelling. Reads stored data only."""
+    from .analysis.transfers import from_db_rows
+    from . import timeline
+    args.token = _valid([args.token])[0]
+    db = _open(settings)
+    transfers = from_db_rows(db.transfers_for(args.token))
+    if not transfers:
+        print(f"No stored transfers for {args.token}: run `rugguard outcome {args.token}` first.")
+        return 1
+    tok = db.query("SELECT decimals, symbol FROM tokens WHERE token_id = ?", (args.token,))
+    decimals = tok[0]["decimals"] if tok and tok[0]["decimals"] is not None else None
+    if decimals is None:
+        print("(Token decimals not stored; amounts are raw units. `rugguard score TOKEN` stores them.)")
+    tl = timeline.build(transfers, args.pool, args.min_share, args.pull_share)
+    print(f"{args.token}" + (f" ({tok[0]['symbol']})" if tok and tok[0]["symbol"] else ""))
+    print(timeline.render(tl, decimals or 0, args.limit))
+    return 0
+
+
 def cmd_report(settings: Settings, args: argparse.Namespace) -> int:
     args.token = _valid([args.token])[0]
     db = _open(settings)
@@ -546,7 +566,15 @@ def cmd_outcomes(settings: Settings, args: argparse.Namespace) -> int:
     if pairs:
         kappa = cohen_kappa(pairs)
         agree = sum(a == b for a, b in pairs) / len(pairs)
-        print(f"Reviewed {len(pairs)}: raw agreement {agree:.0%}, Cohen's kappa {kappa:.2f}")
+        print(f"Reviewed {len(pairs)}: raw agreement {agree:.0%}, Cohen's kappa {kappa:.2f} (all labels)")
+        # What the evaluation depends on: rugged or not, among tokens both sides could judge.
+        judged = [(a == "rugged", b == "rugged") for a, b in pairs
+                  if a in ("rugged", "faded", "alive") and b in ("rugged", "faded", "alive")]
+        if judged:
+            bk = cohen_kappa([("rugged" if a else "not", "rugged" if b else "not") for a, b in judged])
+            ba = sum(a == b for a, b in judged) / len(judged)
+            print(f"Rugged vs not rugged, {len(judged)} judged by both: agreement {ba:.0%}, kappa {bk:.2f}"
+                  f"{' (small sample)' if len(judged) < 20 else ''}")
     else:
         print("No human reviews yet: `rugguard review <token> <label> --reason \"...\"`")
     return 0
@@ -673,6 +701,17 @@ def build_parser() -> argparse.ArgumentParser:
     dp.add_argument("--out", default=str(Path("demo/rugguard-demo.db.gz")))
     dp.add_argument("--no-cache", action="store_true", help="leave out cached API responses (smaller)")
     dp.set_defaults(fn=cmd_demo_pack)
+
+    tl = sub.add_parser("timeline", help="a token's pool activity in order, with seed and pull marked "
+                                         "(for human labelling; stored data only)")
+    tl.add_argument("token")
+    tl.add_argument("--limit", type=int, default=60, help="rows to print (default 60)")
+    tl.add_argument("--min-share", type=float, default=0.01,
+                    help="hide buys/sells smaller than this share of the seed (default 0.01 = 1%%)")
+    tl.add_argument("--pull-share", type=float, default=0.5,
+                    help="mark a pool->seeder transfer as PULL? from this share of the seed (default 0.5)")
+    tl.add_argument("--pool", default="v2.ref-finance.near")
+    tl.set_defaults(fn=cmd_timeline)
 
     k = sub.add_parser("keys", help="what an account's access keys allow (e.g. prove an AI agent has no full-access key)")
     k.add_argument("account")

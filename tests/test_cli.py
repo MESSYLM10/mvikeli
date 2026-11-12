@@ -276,3 +276,20 @@ def test_demo_without_a_pack_explains(run, capsys, tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     assert run("demo") == 1
     assert "No demo pack" in capsys.readouterr().out
+
+
+def test_outcomes_reports_rugged_vs_not_agreement(tmp_path, monkeypatch, capsys):
+    from rugguard.storage.db import Database
+    db_path = tmp_path / "k.db"
+    db = Database(db_path)
+    db.init()
+    for token, auto, human in (("a.near", "rugged", "rugged"), ("b.near", "rugged", "rugged"),
+                               ("c.near", "alive", "faded"), ("d.near", "rugged", "faded"),
+                               ("e.near", "alive", "needs_review")):
+        db.put_outcome(token, auto, "outcome-rules-v2", [], {})
+        db.put_review(token, human, "x", None)
+    monkeypatch.setattr(Settings, "from_env", classmethod(lambda cls: cls(db_path=db_path)))
+    assert cli.main(["outcomes"]) == 0
+    out = capsys.readouterr().out
+    assert "raw agreement 40%" in out                      # 2 of 5 identical labels
+    assert "Rugged vs not rugged, 4 judged by both: agreement 75%" in out
