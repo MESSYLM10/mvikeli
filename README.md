@@ -9,6 +9,22 @@ token's code or seize its account.
 
 > Output is a set of *risk signals*, not an accusation. A high band means "these powers exist", not "this is a scam".
 
+## Try it in one minute (offline, no API keys)
+
+```bash
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[api]"
+python -m rugguard demo            # results for 30+ mainnet tokens, evaluation reports, testnet guard run
+python -m rugguard demo --serve    # the same data in the web UI: http://127.0.0.1:8000
+```
+
+`demo` restores a packed copy of a real RugGuard database (`demo/rugguard-demo.db.gz`) to
+`data/demo.db` and makes no network calls. It prints the holdout and dev-set evaluation, writes the
+per-token CSV and Markdown reports to `runs/`, and lists the testnet transactions of the guard vault.
+The pack includes the cached API responses, so stored scores can be re-computed offline:
+`RUGGUARD_DB=data/demo.db RUGGUARD_OFFLINE=1 python -m rugguard score bome.narrowcap6721.near`.
+`docker compose up --build` serves the same demo at http://127.0.0.1:8080.
+
 ## What it checks today
 
 | Check | Source | High risk when |
@@ -315,3 +331,5 @@ the agent cannot swap on its own; the vault swaps for it on Rhea, and first refu
 score is 60 or more, when no fresh score exists (fail closed), or when the swap is over the per-swap or
 daily limit. Refusals are recorded on-chain with the score and evidence. RugGuard posts scores as the
 vault's oracle (`rugguard guard post-score`). Build, deploy and demo steps: `contracts/guard-vault/README.md`.
+
+Verified on testnet: the agent's request to buy a token scored 90 was refused on-chain (`HIGH_RISK`), a token scored 20 was swapped on Rhea through the vault, and a 2.5 wNEAR request over the 2 wNEAR limit was refused; transaction links are in the contract README.

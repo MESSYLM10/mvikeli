@@ -316,7 +316,8 @@ def cmd_guard(settings: Settings, args: argparse.Namespace) -> int:
             signer = args.agent or os.getenv("RUGGUARD_AGENT")
             if not signer:
                 raise UsageError("Name the agent account: --agent ACCOUNT or RUGGUARD_AGENT in .env")
-            out = guard.request_swap(cli, vault, signer, args.token, args.amount, args.pool, args.min_out)
+            out = guard.request_swap(cli, vault, signer, args.token, args.amount, args.pool, args.min_out,
+                                     args.key_file or os.getenv("RUGGUARD_AGENT_KEY_FILE"))
             print(out.strip())
         elif args.action == "check":
             print(guard.check(cli, vault, args.token, args.amount).strip())
@@ -551,6 +552,66 @@ def cmd_outcomes(settings: Settings, args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_demo_pack(settings: Settings, args: argparse.Namespace) -> int:
+    from . import demo
+    try:
+        info = demo.pack(settings.db_path, Path(args.out), with_cache=not args.no_cache)
+    except FileNotFoundError as exc:
+        print(exc)
+        return 1
+    print(f"Packed {settings.db_path} -> {info['path']}: {info['tokens']} tokens, {info['outcomes']} outcomes, "
+          f"{info['risk_scores']} scores, {info['raw_responses']} cached API responses; "
+          f"{info['db_bytes'] / 1e6:.1f} MB -> {info['packed_bytes'] / 1e6:.1f} MB")
+    if info["packed_bytes"] > 50e6:
+        print("That is large for git (GitHub warns above 50 MB). Try --no-cache.")
+    return 0
+
+
+def cmd_demo(settings: Settings, args: argparse.Namespace) -> int:
+    """Everything a reviewer needs, offline: stored results, the evaluation, the testnet guard run."""
+    from . import demo
+    try:
+        fresh = demo.unpack(Path(args.pack), demo.DEMO_DB, args.reset)
+    except FileNotFoundError as exc:
+        print(f"{exc} The demo pack ships with the repository; re-clone, or build one with `rugguard demo-pack`.")
+        return 1
+    settings.db_path, settings.offline = demo.DEMO_DB, True
+    db = _open(settings)
+    labels = {r["label"]: r["n"] for r in db.query(
+        "SELECT o.label, COUNT(*) AS n FROM outcomes o WHERE o.outcome_id IN "
+        "(SELECT MAX(outcome_id) FROM outcomes GROUP BY token_id) GROUP BY o.label")}
+    n_scored = db.query("SELECT COUNT(DISTINCT sn.token_id) AS n FROM risk_scores rs "
+                        "JOIN snapshots sn ON sn.snapshot_id = rs.snapshot_id WHERE rs.kind = 'total'")[0]["n"]
+    print(f"RugGuard offline demo ({'unpacked' if fresh else 'using'} {demo.DEMO_DB}; no network calls)")
+    print(f"{sum(labels.values())} mainnet tokens judged by the post-mortem ("
+          + ", ".join(f"{k} {v}" for k, v in sorted(labels.items())) + f"); {n_scored} scored")
+    sets = [(name, Path(p)) for name, p in (("holdout", args.holdout), ("dev", args.dev)) if Path(p).exists()]
+    for name, path in sets or [("all", None)]:
+        only = None
+        if path is not None:
+            only = {line.split()[0] for line in path.read_text().splitlines()
+                    if line.strip() and not line.strip().startswith("#")}
+        ev = evaluate(db, only)
+        title = {"holdout": "Holdout (never used for tuning)", "dev": "Dev set (rules tuned here)"}.get(name, "All")
+        print(f"\n{title}: {ev['judged']} judged, {ev['excluded']} excluded")
+        if ev["auc"] is not None:
+            print(f"  caught {ev['caught']} of {ev['rugged']} rugs at score >= {ev['threshold']:.0f}; "
+                  f"false alarms {ev['false_alarms']} of {ev['judged'] - ev['rugged']}; AUC {ev['auc']:.2f}")
+        stem = Path(args.runs) / f"demo-{name}"
+        csv_path, md_path = write_report(db, ev, stem, name, "rugguard " + " ".join(args.argv))
+        print(f"  report: {md_path} (per-token data: {csv_path})")
+    print("\nGuard vault on NEAR testnet (the agent holds one function-call key):")
+    for what, tx in demo.GUARD_TXS:
+        print(f"  {what}\n    https://testnet.nearblocks.io/txns/{tx}")
+    print("\nReproduce a stored score from the cached API responses, offline:")
+    print("  RUGGUARD_DB=data/demo.db RUGGUARD_OFFLINE=1 python -m rugguard score bome.narrowcap6721.near")
+    if args.serve:
+        print(f"\nServing the UI on http://{args.host}:{args.port} (offline; Ctrl+C to stop)")
+        return cmd_serve(settings, args)
+    print("Browse it: python -m rugguard demo --serve   (needs pip install -e '.[api]')")
+    return 0
+
+
 def cmd_serve(settings: Settings, args: argparse.Namespace) -> int:
     try:
         import uvicorn
@@ -596,6 +657,22 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("token")
     s.add_argument("--json", action="store_true")
     s.set_defaults(fn=cmd_surface)
+
+    dm = sub.add_parser("demo", help="offline demo: stored results, evaluation reports, testnet guard run")
+    dm.add_argument("--pack", default=str(Path("demo/rugguard-demo.db.gz")))
+    dm.add_argument("--holdout", default="seeds/holdout.txt")
+    dm.add_argument("--dev", default="seeds/memecoins.txt")
+    dm.add_argument("--reset", action="store_true", help="restore data/demo.db from the pack again")
+    dm.add_argument("--runs", default="runs", help="folder for the evaluation reports (default runs/)")
+    dm.add_argument("--serve", action="store_true", help="then start the web UI on the demo data")
+    dm.add_argument("--host", default="127.0.0.1")
+    dm.add_argument("--port", type=int, default=8000)
+    dm.set_defaults(fn=cmd_demo)
+
+    dp = sub.add_parser("demo-pack", help="pack the current database into demo/rugguard-demo.db.gz")
+    dp.add_argument("--out", default=str(Path("demo/rugguard-demo.db.gz")))
+    dp.add_argument("--no-cache", action="store_true", help="leave out cached API responses (smaller)")
+    dp.set_defaults(fn=cmd_demo_pack)
 
     k = sub.add_parser("keys", help="what an account's access keys allow (e.g. prove an AI agent has no full-access key)")
     k.add_argument("account")
@@ -677,6 +754,8 @@ def build_parser() -> argparse.ArgumentParser:
             g.add_argument("--pool", type=int, required=True, help="Rhea pool ID for wNEAR/TOKEN")
             g.add_argument("--min-out", default="1", help="minimum TOKEN out, raw units (default 1)")
             g.add_argument("--agent", help="agent account that signs (default RUGGUARD_AGENT)")
+            g.add_argument("--key-file", help="sign with this access-key JSON file instead of the keychain "
+                                              "(default RUGGUARD_AGENT_KEY_FILE)")
         g.add_argument("--vault", help="vault contract account (default RUGGUARD_VAULT)")
         g.add_argument("--network", default="testnet")
         g.add_argument("--dry-run", action="store_true", help="print the near command instead of running it")

@@ -9,15 +9,17 @@
 #                  internal "front" network. Runs as an unprivileged user, read-only root
 #                  filesystem, no Linux capabilities, no privilege escalation. Its only
 #                  writable path is the data volume. It holds no NEAR keys.
-#   (agent)        The guard-agent demo will run as its own service with a testnet
-#                  function-call key, on its own network, and never inside "api".
+#   (agent)        The guard agent is not a service here: its testnet function-call key stays on the
+#                  operator's machine (contracts/guard-vault/README.md), never inside "api".
 #
 # To expose a public demo, change the proxy port binding and set RUGGUARD_ADMIN_TOKEN.
 
 services:
   api:
     build: .
-    command: ["serve", "--host", "0.0.0.0", "--port", "8000"]
+    # Default: the offline demo (stored mainnet results, no API calls). For live data replace with
+    # ["serve", "--host", "0.0.0.0", "--port", "8000"].
+    command: ["demo", "--serve", "--host", "0.0.0.0", "--port", "8000", "--runs", "data/runs"]
     environment:
       RUGGUARD_NETWORK: ${RUGGUARD_NETWORK:-mainnet}
       NEARBLOCKS_API_KEY: ${NEARBLOCKS_API_KEY:-}

@@ -57,11 +57,13 @@ class NearCli:
                           "json-args", json.dumps(args), "network-config", self.network, "now"])
 
     def call(self, contract: str, method: str, args: dict, signer: str, gas_tgas: int = 100,
-             deposit: str = "0 NEAR") -> str:
+             deposit: str = "0 NEAR", key_file: str | None = None) -> str:
+        # The OS keychain by default; a key file (e.g. ~/.near-credentials/testnet/<acct>.json) when given.
+        sign = ["sign-with-access-key-file", key_file] if key_file else ["sign-with-keychain"]
         return self._run([self.binary, "contract", "call-function", "as-transaction", contract, method,
                           "json-args", json.dumps(args), "prepaid-gas", f"{gas_tgas}.0 Tgas",
                           "attached-deposit", deposit, "sign-as", signer, "network-config", self.network,
-                          "sign-with-keychain", "send"])
+                          *sign, "send"])
 
 
 def latest_total(db, token: str) -> dict:
@@ -87,11 +89,11 @@ def post_score(cli: NearCli, db, token: str, vault: str, oracle: str, as_token: 
 
 
 def request_swap(cli: NearCli, vault: str, agent: str, token: str, amount_near: str, pool_id: int,
-                 min_out: str = "1") -> str:
+                 min_out: str = "1", key_file: str | None = None) -> str:
     return cli.call(account_id(vault), "request_swap",
                     {"token_out": account_id(token), "amount_in": str(to_yocto(amount_near)),
                      "pool_id": int(pool_id), "min_amount_out": str(int(min_out))},
-                    account_id(agent), gas_tgas=200)
+                    account_id(agent), gas_tgas=200, key_file=key_file)
 
 
 def check(cli: NearCli, vault: str, token: str, amount_near: str) -> str:

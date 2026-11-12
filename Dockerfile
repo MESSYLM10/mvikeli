@@ -7,6 +7,7 @@ COPY pyproject.toml README.md ./
 COPY rugguard ./rugguard
 RUN pip install --no-cache-dir ".[api]" && rm -rf /root/.cache
 COPY seeds ./seeds
+COPY demo ./demo
 RUN mkdir -p /app/data && chown rugguard:rugguard /app/data
 
 USER rugguard

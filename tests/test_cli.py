@@ -209,6 +209,10 @@ def test_guard_swap_dry_run_and_validation(run, capsys):
                "--agent", "agent.testnet", "--dry-run") == 0
     out = capsys.readouterr().out
     assert "request_swap" in out and "1500000000000000000000000" in out and "sign-as agent.testnet" in out
+    assert "sign-with-keychain" in out
+    assert run("guard", "swap", "tok.testnet", "--pool", "7", "--vault", "v.testnet", "--agent", "agent.testnet",
+               "--key-file", "/tmp/agent.json", "--dry-run") == 0
+    assert "sign-with-access-key-file /tmp/agent.json" in capsys.readouterr().out
     assert run("guard", "swap", "BAD TOKEN", "--pool", "7", "--vault", "v.testnet", "--agent", "a.testnet",
                "--dry-run") == 2
     assert run("guard", "post-score", "unscored.near", "--vault", "v.testnet", "--oracle", "o.testnet",
@@ -235,3 +239,40 @@ def test_describe_keys_for_an_agent_account():
     full = {**fc, "permission": "FullAccess", "is_full": True, "receiver_id": None, "method_names": []}
     verdict, _ = describe_keys("agent.rugguard-jd.testnet", [fc, full])
     assert verdict.startswith("1 full-access key")
+
+
+# ---- offline demo ----
+
+def test_demo_pack_then_offline_demo_and_rescore(run, capsys, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    assert run("outcome", "meme.near", "--page-size", "20") == 0
+    assert run("score", "meme.near", "--page-size", "20") == 0
+    stored = cli.Database(tmp_path / "cli.db").query(
+        "SELECT score FROM risk_scores WHERE kind='total' ORDER BY score_id DESC LIMIT 1")[0]["score"]
+    assert run("demo-pack") == 0
+    assert "Packed" in capsys.readouterr().out and (tmp_path / "demo/rugguard-demo.db.gz").exists()
+
+    (tmp_path / "seeds").mkdir()
+    (tmp_path / "seeds/holdout.txt").write_text("meme.near\n")
+
+    def no_network(*a, **k):
+        raise AssertionError("the demo must not touch the network")
+    monkeypatch.setattr(rugguard.http, "requests_transport", no_network)
+    assert run("demo") == 0
+    out = capsys.readouterr().out
+    assert "offline demo" in out and "Holdout" in out and "testnet.nearblocks.io/txns/iPXzqG4s" in out
+    assert (tmp_path / "runs/demo-holdout.md").exists() and (tmp_path / "runs/demo-holdout.csv").exists()
+
+    # the cached responses reproduce the stored score with the network switched off
+    monkeypatch.setattr(Settings, "from_env", classmethod(
+        lambda cls: cls(db_path=tmp_path / "data/demo.db", max_retries=0, offline=True)))
+    assert run("score", "meme.near", "--page-size", "20") == 0
+    rescored = cli.Database(tmp_path / "data/demo.db").query(
+        "SELECT score FROM risk_scores WHERE kind='total' ORDER BY score_id DESC LIMIT 1")[0]["score"]
+    assert rescored == stored
+
+
+def test_demo_without_a_pack_explains(run, capsys, tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    assert run("demo") == 1
+    assert "No demo pack" in capsys.readouterr().out

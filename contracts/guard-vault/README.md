@@ -35,7 +35,7 @@ cd contracts/guard-vault
 cargo near build non-reproducible-wasm          # -> target/near/guard_vault.wasm
 
 # 2. Sub-accounts (paid from the owner account)
-for a in vault:4 oracle:1 agent:1; do
+for a in vault:6 oracle:1 agent:1; do      # the vault needs ~1.7 NEAR for code storage + 3 to wrap
   near account create-account fund-myself ${a%%:*}.rugguard-demo.testnet "${a##*:} NEAR" \
     autogenerate-new-keypair save-to-keychain sign-as rugguard-demo.testnet \
     network-config testnet sign-with-keychain send
@@ -60,8 +60,8 @@ near contract call-function as-transaction wrap.testnet near_deposit json-args '
 # 5. The agent gets a function-call key for request_swap only, then loses its full-access key
 near account add-key agent.rugguard-demo.testnet grant-function-call-access \
   --allowance '0.5 NEAR' --contract-account-id vault.rugguard-demo.testnet \
-  --function-names request_swap autogenerate-new-keypair save-to-keychain \
-  network-config testnet sign-with-keychain send
+  --function-names request_swap autogenerate-new-keypair save-to-legacy-keychain \
+  network-config testnet sign-with-keychain send     # a key file: near-cli-rs signs with it reliably
 near account list-keys agent.rugguard-demo.testnet network-config testnet now
 near account delete-keys agent.rugguard-demo.testnet public-keys ed25519:<THE_FULL_ACCESS_KEY> \
   network-config testnet sign-with-keychain send
@@ -69,6 +69,20 @@ near account delete-keys agent.rugguard-demo.testnet public-keys ed25519:<THE_FU
 # RugGuard's own key check proves it: the agent has a FunctionCall key and nothing else
 RUGGUARD_NETWORK=testnet python3 -m rugguard keys agent.rugguard-demo.testnet
 ```
+
+## Verified on testnet (11 Nov 2026)
+
+Vault `vault.rugguard-jd.testnet`; agent `agent.rugguard-jd.testnet` holds one function-call key
+(`request_swap` on the vault, 0.5 NEAR gas allowance) and no full-access key.
+
+| Step | Result | Transaction |
+|---|---|---|
+| Agent asks to buy the rug stand-in (score 90) | **Refused, `HIGH_RISK`** | [`iPXzqG4s…`](https://testnet.nearblocks.io/txns/iPXzqG4sbacHCnF1QkavWwLCkUVYbbq9HgEf9735D23) |
+| Agent buys 0.5 wNEAR of `ref.fakes.testnet` (score 20) | Approved; the vault swapped on Rhea and received 0.1418 ref.fakes | [`8Sr3Kk3g…`](https://testnet.nearblocks.io/txns/8Sr3Kk3gcW1Dbdo2yfNMBvURDLLf9267p7vKzYESMTgZ) |
+| Agent asks for 2.5 wNEAR (limit 2) | **Refused, `OVER_SWAP_LIMIT`** | [`GGhmZRpM…`](https://testnet.nearblocks.io/txns/GGhmZRpM38dRCjsUoivaQorTGwDYJz4CQgG9xwVSmAvi) |
+
+Each decision is a `rugguard-guard` event in the vault's logs, e.g.
+`{"event":"swap_refused","data":[{"code":"HIGH_RISK","score":90,"reason":"RugGuard scored this token 90/100 (score-v2) ..."}]}`.
 
 ## Demo
 
