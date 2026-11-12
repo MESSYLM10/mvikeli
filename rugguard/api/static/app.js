@@ -1,4 +1,4 @@
-// RugGuard UI. Every value that comes from the chain (token IDs, names, evidence) is
+// Mvikeli UI. Every value that comes from the chain (token IDs, names, evidence) is
 // inserted with textContent, never innerHTML, so hostile token metadata cannot run here.
 "use strict";
 
@@ -87,7 +87,7 @@ async function lookup(token) {
 
   const [stored, live] = await Promise.allSettled([
     api(`/api/tokens/${encodeURIComponent(token)}`),
-    api(`/api/tokens/${encodeURIComponent(token)}/surface`),
+    offline ? Promise.reject(new Error("offline")) : api(`/api/tokens/${encodeURIComponent(token)}/surface`),
   ]);
   if (current !== token) return;
   renderReport(token, stored.value, live.status === "fulfilled" ? live.value : null,
@@ -101,6 +101,18 @@ function renderReport(token, stored, live, liveError) {
     : stored && stored.snapshot ? "" : "No snapshot collected yet";
 
   const blocks = [];
+  const scores = (stored && stored.scores) || [];
+  if (offline) {
+    // The demo has no live data: the combined score (below) already includes code and supply signals.
+    setChildren($("r-verdicts"));
+    renderScore(scores.find((s) => s.kind === "total"));
+    if (!scores.find((s) => s.kind === "total")) {
+      setChildren($("r-verdicts"), el("p", { class: "notes",
+        text: "This token has no stored score in the demo data. Pick one from the post-mortem table below." }));
+    }
+    renderOutcome(stored);
+    return;
+  }
   if (live) {
     blocks.push(verdict(SCORE_NAME.upgrade_surface, live.band, live.reasons, "Checked just now",
       (live.facts && live.facts.notes) || []));
@@ -108,7 +120,6 @@ function renderReport(token, stored, live, liveError) {
     blocks.push(verdict(SCORE_NAME.upgrade_surface, "unknown",
       [liveError || "The live check could not reach NEAR."], "Live check failed"));
   }
-  const scores = (stored && stored.scores) || [];
   const conc = scores.find((s) => s.kind === "concentration");
   if (conc) {
     blocks.push(verdict(SCORE_NAME.concentration, conc.band, conc.reasons,
@@ -240,7 +251,7 @@ async function refreshLog() {
   try {
     const { entries } = await api("/api/logs?n=40");
     $("activity-section").hidden = false;
-    // Show what RugGuard did (source calls, jobs, reviews), not this page's own polling.
+    // Show what Mvikeli did (source calls, jobs, reviews), not this page's own polling.
     const shown = entries.filter((e) => e.event !== "http" || e.status >= 400).slice(-25).reverse();
     setChildren($("log"), ...shown.map((e) => {
       const detail = e.event === "fetch" ? `${e.source}: ${e.what} → ${e.status ?? "no response"} in ${e.ms ?? "?"} ms`
@@ -251,6 +262,39 @@ async function refreshLog() {
     }));
   } catch (err) {
     if (err.status === 401) $("activity-section").hidden = true;
+  }
+}
+
+// ------------------------------------------------------------------ results + guard
+let offline = false;
+
+async function refreshResults() {
+  let data;
+  try { data = await api("/api/results"); } catch { return; }
+  if (data.sets.length) {
+    $("results-section").hidden = false;
+    setChildren($("results"), ...data.sets.map((set) => el("div", { class: "result-set" }, [
+      el("h3", { text: set.title }),
+      el("table", { class: "results" }, [
+        el("thead", {}, el("tr", {}, ["Labels", "Rugs caught", "False alarms", "AUC"].map(
+          (h) => el("th", { scope: "col", text: h })))),
+        el("tbody", {}, set.rows.map((r) => el("tr", {}, [
+          el("th", { scope: "row", text: r.labels }),
+          el("td", { class: "num", text: `${r.caught} of ${r.rugged}` }),
+          el("td", { class: "num", text: `${r.false_alarms} of ${r.others}` }),
+          el("td", { class: "num", text: r.auc.toFixed(2) }),
+        ]))),
+      ]),
+    ])), el("p", { class: "rail-note",
+      text: "Caught = a score of 60 or more. AUC is the chance a random rug outscores a random survivor "
+        + "(0.5 is a coin flip). Small samples: read the README's caveats before quoting these." }));
+  }
+  if (data.guard.length) {
+    $("guard-section").hidden = false;
+    setChildren($("guard"), ...data.guard.map((g) => el("li", {}, [
+      el("span", { text: g.what }),
+      el("a", { href: g.url, rel: "noopener noreferrer", target: "_blank", text: "Transaction on NearBlocks" }),
+    ])));
   }
 }
 
@@ -342,9 +386,17 @@ async function start() {
     const h = await api("/api/health");
     $("net").textContent = `NEAR ${h.network}`;
     $("review-key-wrap").hidden = !h.writes_need_key;
+    offline = Boolean(h.offline);
+    if (offline) {
+      $("demo-note").hidden = false;
+      for (const id of ["btn-collect", "btn-outcome"]) $(id).hidden = true;
+      $("discover").closest(".band").hidden = true;
+      $("btn-score").textContent = "Re-score from cache";
+    }
   } catch {
     $("net").textContent = "Service unreachable";
   }
+  refreshResults();
   refreshOutcomes();
   schedulePoll(0);
   const fromHash = decodeURIComponent(location.hash.slice(1));

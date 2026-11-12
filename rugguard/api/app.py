@@ -1,4 +1,4 @@
-"""RugGuard HTTP API and web UI (FastAPI).
+"""Mvikeli HTTP API and web UI (FastAPI).
 
     rugguard serve                       # http://127.0.0.1:8000  (UI at /, API docs at /docs)
 
@@ -134,7 +134,7 @@ def create_app(settings: Settings | None = None, transport: Transport | None = N
 
     jobs = JobQueue(run_job)
 
-    app = FastAPI(title="RugGuard", version=__version__,
+    app = FastAPI(title="Mvikeli", version=__version__,
                   description="Rug-pull risk signals and post-mortems for NEAR NEP-141 tokens. "
                               "Powered by Nearblocks.io APIs.")
     app.state.jobs = jobs
@@ -191,7 +191,8 @@ def create_app(settings: Settings | None = None, transport: Transport | None = N
     @app.get("/api/health")
     def health() -> dict:
         return {"status": "ok", "version": __version__, "network": settings.network,
-                "jobs_waiting": jobs.waiting(), "writes_need_key": bool(admin_token)}
+                "offline": settings.offline, "jobs_waiting": jobs.waiting(),
+                "writes_need_key": bool(admin_token)}
 
     @app.get("/api/rules")
     def rules() -> dict:
@@ -264,6 +265,37 @@ def create_app(settings: Settings | None = None, transport: Transport | None = N
             return evaluate(db)
         finally:
             db.close()
+
+    @app.get("/api/results")
+    def results() -> dict:
+        """The evaluation per token set (seed files next to the service) and the testnet guard run."""
+        from ..demo import GUARD_TXS
+        sets = []
+        db = open_db()
+        try:
+            for name, path, title in (("holdout", "seeds/holdout.txt", "Holdout: launches never used for tuning"),
+                                      ("dev", "seeds/memecoins.txt", "Dev set: the rules were tuned here")):
+                if not Path(path).exists():
+                    continue
+                only = {line.split()[0] for line in Path(path).read_text().splitlines()
+                        if line.strip() and not line.strip().startswith("#")}
+                rows = []
+                for tag, use_human in (("Rule labels", False), ("After human review", True)):
+                    ev = evaluate(db, only, use_human=use_human)
+                    if ev["auc"] is None:
+                        continue
+                    if use_human and not any(r["label_source"] == "human" for r in ev["rows"]):
+                        continue
+                    rows.append({"labels": tag, "judged": ev["judged"], "rugged": ev["rugged"],
+                                 "caught": ev["caught"], "false_alarms": ev["false_alarms"],
+                                 "others": ev["judged"] - ev["rugged"], "auc": ev["auc"],
+                                 "threshold": ev["threshold"]})
+                if rows:
+                    sets.append({"name": name, "title": title, "rows": rows})
+        finally:
+            db.close()
+        guard = [{"what": what, "tx": tx, "url": f"https://testnet.nearblocks.io/txns/{tx}"} for what, tx in GUARD_TXS]
+        return {"sets": sets, "guard": guard}
 
     @app.post("/api/discover", status_code=202)
     def discover(request: Request, recent: int = Query(300, ge=10, le=2000)):

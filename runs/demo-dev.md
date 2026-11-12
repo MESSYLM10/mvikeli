@@ -1,7 +1,7 @@
 # RugGuard evaluation: dev
 
-- Run: `20261112T112130Z` (UTC), code commit `ffe20b7`
-- Command: `rugguard demo`
+- Run: `20261112T112734Z` (UTC), code commit `4088066`
+- Command: `rugguard demo --serve`
 - Outcome rules: outcome-rules-v2; score rules: score-v2
 - Per-token data: `demo-dev.csv` (one row per token, with rule versions, snapshot IDs and evidence)
 

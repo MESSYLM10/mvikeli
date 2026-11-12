@@ -157,7 +157,7 @@ def markdown(ev: dict, rows: list[dict], *, token_set: str, run_id: str, command
     count = {v: sum(r["verdict"] == v for r in rows) for v in ("caught", "missed", "false_alarm", "correct_clear")}
     versions_o = sorted({r["outcome_rules"] for r in rows if r["outcome_rules"]})
     versions_s = sorted({r["score_rules"] for r in rows if r["score_rules"]})
-    L = [f"# RugGuard evaluation: {token_set}", "",
+    L = [f"# Mvikeli evaluation: {token_set}", "",
          f"- Run: `{run_id}` (UTC), code commit `{commit}`",
          f"- Command: `{command}`",
          f"- Outcome rules: {', '.join(versions_o) or '–'}; score rules: {', '.join(versions_s) or '–'}",
@@ -191,7 +191,7 @@ def markdown(ev: dict, rows: list[dict], *, token_set: str, run_id: str, command
               "Each simpler rule runs on the same judged tokens. A single signal flags a token when its subscore is "
               "at least 0.5.", "",
               "| Rule | Rugs caught | False alarms | AUC |", "|---|---|---|---|",
-              f"| **RugGuard score ≥ {th:.0f}** | **{ev['caught']} of {ev['rugged']}** | "
+              f"| **Mvikeli score ≥ {th:.0f}** | **{ev['caught']} of {ev['rugged']}** | "
               f"**{ev['false_alarms']} of {ev['judged'] - ev['rugged']}** | **{ev['auc']:.2f}** |"]
         for b in baselines(rows):
             a = "–" if b["auc"] is None else f"{b['auc']:.2f}"

@@ -170,3 +170,16 @@ def test_logs_record_source_calls_without_secrets(tmp_path):
     fetches = [e for e in entries if e["event"] == "fetch"]
     assert fetches and all("source" in e and "what" in e for e in fetches)
     assert all("Authorization" not in json.dumps(e) and "Bearer" not in json.dumps(e) for e in entries)
+
+
+def test_results_and_offline_flag(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "seeds").mkdir()
+    (tmp_path / "seeds/holdout.txt").write_text("meme.near\n")
+    s = Settings(db_path=tmp_path / "r.db", max_retries=0, offline=True)
+    app = create_app(s, transport=CliWorld(), start_worker=False)
+    c = TestClient(app)
+    assert c.get("/api/health").json()["offline"] is True
+    r = c.get("/api/results").json()
+    assert r["sets"] == []                                # nothing judged yet
+    assert len(r["guard"]) == 3 and r["guard"][0]["url"].startswith("https://testnet.nearblocks.io/txns/")

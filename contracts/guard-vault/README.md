@@ -5,14 +5,14 @@ The AI agent gets money, not the keys to everything.
 | Who | Holds | Can do |
 |---|---|---|
 | Owner (`rugguard-demo.testnet`) | full-access key | fund the vault, set limits, pause, change agent or oracle |
-| RugGuard oracle (`oracle.rugguard-demo.testnet`) | its own key | `set_score(token, score, rules_version, evidence)` |
+| Mvikeli oracle (`oracle.rugguard-demo.testnet`) | its own key | `set_score(token, score, rules_version, evidence)` |
 | AI agent (`agent.rugguard-demo.testnet`) | **one function-call key only**: receiver = vault, method = `request_swap` | ask the vault to swap |
 | Vault (`vault.rugguard-demo.testnet`) | the wNEAR | checks every request, then swaps on Rhea itself |
 
 A function-call key cannot attach a deposit, and Rhea swaps go through wNEAR `ft_transfer_call`, which needs
 1 yoctoNEAR. So the agent cannot swap on its own: every swap has to pass the vault's checks.
 
-**Checks, in order:** not paused → RugGuard has scored the token (otherwise refuse: the guard fails closed)
+**Checks, in order:** not paused → Mvikeli has scored the token (otherwise refuse: the guard fails closed)
 → the score is under 24 h old → score below the threshold (60) → amount within the per-swap limit → within
 the daily cap. A refusal returns normally, so the decision and its reason stay on-chain as a
 `rugguard-guard` event (`swap_refused`, code `HIGH_RISK`, with the score and evidence).
@@ -66,11 +66,15 @@ near account list-keys agent.rugguard-demo.testnet network-config testnet now
 near account delete-keys agent.rugguard-demo.testnet public-keys ed25519:<THE_FULL_ACCESS_KEY> \
   network-config testnet sign-with-keychain send
 
-# RugGuard's own key check proves it: the agent has a FunctionCall key and nothing else
+# Mvikeli's own key check proves it: the agent has a FunctionCall key and nothing else
 RUGGUARD_NETWORK=testnet python3 -m rugguard keys agent.rugguard-demo.testnet
 ```
 
 ## Verified on testnet (11 Nov 2026)
+
+The vault was deployed before the project was renamed from RugGuard to Mvikeli, so its on-chain
+messages and event standard (`rugguard-guard`) use the old name; `src/lib.rs` is kept identical to the
+deployed code.
 
 Vault `vault.rugguard-jd.testnet`; agent `agent.rugguard-jd.testnet` holds one function-call key
 (`request_swap` on the vault, 0.5 NEAR gas allowance) and no full-access key.
@@ -86,7 +90,7 @@ Each decision is a `rugguard-guard` event in the vault's logs, e.g.
 
 ## Demo
 
-Testnet has no history of real rugs, so the oracle posts the scores RugGuard computed for two **mainnet**
+Testnet has no history of real rugs, so the oracle posts the scores Mvikeli computed for two **mainnet**
 tokens under two testnet token IDs. The evidence string on-chain says so ("stand-in for mainnet …").
 
 ```bash

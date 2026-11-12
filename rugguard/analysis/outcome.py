@@ -2,7 +2,7 @@
 
 This is deliberately separate from the risk scorer. The scorer may only use what was
 knowable shortly after launch; this module judges what happened next. Keeping them apart
-is what stops RugGuard from grading its own homework.
+is what stops Mvikeli from grading its own homework.
 
 Every rule and threshold lives in `OutcomeRules` (printed by `rugguard rules`). Every label
 comes with the evidence that produced it, so a human audits conclusions instead of making them.
@@ -142,7 +142,7 @@ def label(inp: OutcomeInputs, rules: OutcomeRules) -> OutcomeResult:
     ev.append(f"Launched {age_h / 24:.1f} days ago: first transfer into {rules.launch_pool_account} "
               f"(tx {launch.tx}).")
     if age_h / 24 > rules.max_launch_age_days:
-        ev.append(f"Not judged: RugGuard judges launches, and this token first traded more than "
+        ev.append(f"Not judged: Mvikeli judges launches, and this token first traded more than "
                   f"{rules.max_launch_age_days:.0f} days ago. A pool emptied this late is more likely a migration "
                   "or an abandoned extra pool than a launch rug.")
         return result("needs_review")

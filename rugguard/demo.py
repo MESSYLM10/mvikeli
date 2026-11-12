@@ -1,4 +1,4 @@
-"""Offline demo: a packed copy of a real RugGuard database that runs with no network and no API keys.
+"""Offline demo: a packed copy of a real Mvikeli database that runs with no network and no API keys.
 
 `pack` copies the working database (scores, outcomes, evidence, transfers and, by default, the cached
 API responses), drops nothing else, compacts it and gzips it into `demo/rugguard-demo.db.gz`.

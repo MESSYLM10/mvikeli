@@ -612,7 +612,7 @@ def cmd_demo(settings: Settings, args: argparse.Namespace) -> int:
         "(SELECT MAX(outcome_id) FROM outcomes GROUP BY token_id) GROUP BY o.label")}
     n_scored = db.query("SELECT COUNT(DISTINCT sn.token_id) AS n FROM risk_scores rs "
                         "JOIN snapshots sn ON sn.snapshot_id = rs.snapshot_id WHERE rs.kind = 'total'")[0]["n"]
-    print(f"RugGuard offline demo ({'unpacked' if fresh else 'using'} {demo.DEMO_DB}; no network calls)")
+    print(f"Mvikeli offline demo ({'unpacked' if fresh else 'using'} {demo.DEMO_DB}; no network calls)")
     print(f"{sum(labels.values())} mainnet tokens judged by the post-mortem ("
           + ", ".join(f"{k} {v}" for k, v in sorted(labels.items())) + f"); {n_scored} scored")
     sets = [(name, Path(p)) for name, p in (("holdout", args.holdout), ("dev", args.dev)) if Path(p).exists()]
@@ -655,7 +655,7 @@ def cmd_serve(settings: Settings, args: argparse.Namespace) -> int:
         return 1
     from .api import create_app
     if args.host not in ("127.0.0.1", "localhost", "::1"):
-        print(f"Warning: listening on {args.host} exposes RugGuard to your network. "
+        print(f"Warning: listening on {args.host} exposes Mvikeli to your network. "
               "Prefer docker compose, which puts the Caddy proxy in front.")
     logs.setup(stderr=True)
     uvicorn.run(create_app(settings), host=args.host, port=args.port, log_level="warning",

@@ -1,4 +1,4 @@
--- RugGuard storage schema (SQLite).
+-- Mvikeli storage schema (SQLite).
 -- Token amounts are NEP-141 u128 values: always stored as TEXT, never INTEGER.
 
 PRAGMA foreign_keys = ON;

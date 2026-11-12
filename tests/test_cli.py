@@ -163,7 +163,7 @@ def test_evaluate_on_a_seeds_subset(run, capsys, tmp_path):
     assert rows[0]["snapshot_id"] and rows[0]["verdict"] in ("caught", "missed", "false_alarm", "correct_clear",
                                                              "excluded")
     md = stem.with_suffix(".md").read_text()
-    assert "# RugGuard evaluation: h" in md and "`meme.near`" in md and "eval-h.csv" in md
+    assert "# Mvikeli evaluation: h" in md and "`meme.near`" in md and "eval-h.csv" in md
     assert "--seeds" in md                   # the command that produced it is recorded
 
 

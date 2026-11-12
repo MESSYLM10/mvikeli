@@ -3,13 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RugGuard</title>
+  <title>Mvikeli</title>
   <link rel="stylesheet" href="/static/app.css">
   <script src="/static/app.js" defer></script>
 </head>
 <body>
   <header class="bar">
-    <a class="brand" href="/">RugGuard</a>
+    <a class="brand" href="/">Mvikeli</a>
+    <span class="brand-tag">RISK ENGINE</span>
     <form id="lookup" class="lookup" autocomplete="off">
       <label for="token" class="visually-hidden">Token contract ID</label>
       <input id="token" name="token" placeholder="Token contract ID, e.g. wrap.near" spellcheck="false"
@@ -17,6 +18,7 @@
       <button type="submit">Check token</button>
     </form>
     <p class="net" id="net"></p>
+    <p class="demo-note" id="demo-note" hidden>Offline demo: stored mainnet results. Live checks are off.</p>
   </header>
 
   <main class="layout">
@@ -60,15 +62,34 @@
     </aside>
   </main>
 
+  <section class="band" id="results-section" hidden>
+    <div class="band-head">
+      <p class="code">[ 01 / Results ]</p>
+      <h2>Does the score work?</h2>
+      <p class="agreement">Score from the first hour after launch; outcome labels from separate, frozen rules.</p>
+    </div>
+    <div id="results"></div>
+  </section>
+
+  <section class="band" id="guard-section" hidden>
+    <div class="band-head">
+      <p class="code">[ 02 / Guard vault ]</p>
+      <h2>Guard vault on NEAR testnet</h2>
+      <p class="agreement">The AI agent holds one function-call key: it can only ask the vault for a swap.</p>
+    </div>
+    <ol class="guard" id="guard"></ol>
+  </section>
+
   <section class="band" id="outcomes-section">
     <div class="band-head">
+      <p class="code">[ 03 / Post-mortems ]</p>
       <h2>Post-mortems</h2>
       <p id="agreement" class="agreement"></p>
     </div>
     <p id="evaluation" class="evaluation"></p>
     <div class="table-wrap">
       <table class="outcomes">
-        <thead><tr><th scope="col">Token</th><th scope="col">RugGuard says</th>
+        <thead><tr><th scope="col">Token</th><th scope="col">Mvikeli says</th>
           <th scope="col">Reviewer says</th><th scope="col">Match</th></tr></thead>
         <tbody id="outcomes"></tbody>
       </table>
@@ -94,6 +115,7 @@
 
   <section class="band">
     <div class="band-head">
+      <p class="code">[ 04 / Recent launches ]</p>
       <h2>Recent launches</h2>
       <form id="discover" class="discover">
         <label>Scan the newest <input id="discover-n" type="number" min="10" max="2000" value="300"> Rhea pools</label>
@@ -106,7 +128,7 @@
   </section>
 
   <footer class="foot">
-    RugGuard shows risk signals, not accusations. Data from NEAR RPC, FastNEAR and Rhea.
+    Mvikeli shows risk signals, not accusations. Data from NEAR RPC, FastNEAR and Rhea.
     Powered by Nearblocks.io APIs.
     <a href="/docs">API reference</a>
   </footer>

@@ -1,6 +1,6 @@
 """Talk to the guard vault contract (contracts/guard-vault) through near-cli-rs.
 
-RugGuard is the vault's oracle: `post_score` reads the latest stored total score for a token and posts it
+Mvikeli is the vault's oracle: `post_score` reads the latest stored total score for a token and posts it
 on-chain with `set_score`. The agent side (`request_swap`) is signed with the agent account's
 function-call key, which the vault is the only contract it can call.
 
@@ -76,7 +76,7 @@ def latest_total(db, token: str) -> dict:
 
 
 def post_score(cli: NearCli, db, token: str, vault: str, oracle: str, as_token: str | None = None) -> dict:
-    """Post RugGuard's latest score for `token` to the vault, optionally under a testnet stand-in ID."""
+    """Post Mvikeli's latest score for `token` to the vault, optionally under a testnet stand-in ID."""
     s = latest_total(db, account_id(token))
     target = account_id(as_token or token)
     evidence = f"rugguard {s['rules_version']} score of {token} at {s['computed_at']}"

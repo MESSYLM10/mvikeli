@@ -1,9 +1,14 @@
-# RugGuard
+# Mvikeli
 
-**Rug-pull and dump-risk signals for NEAR NEP-141 tokens.** Built for the NEAR Hackathon (Nov 2026),
-track: *AI Security & Defense*.
+**Rug-pull and dump-risk signals for NEAR NEP-141 tokens, and a guard vault that lets an AI agent trade
+with a function-call key but refuses tokens Mvikeli flags.** Built at NEAR HACKATHON (1–14 Nov 2026),
+track: *AI Security & Defense* (`security`).
 
-RugGuard checks a token before you (or your AI agent) buy it, and explains its verdict in plain words.
+*Mvikeli* is siSwati for "protector". The project began as RugGuard, which remains its code name: the
+Python package and command (`python -m rugguard`), the `RUGGUARD_*` settings and the testnet accounts
+keep it, so every command below works as written.
+
+Mvikeli checks a token before you (or your AI agent) buy it, and explains its verdict in plain words.
 Its headline check is NEAR-specific: the **upgrade surface**, meaning whether anyone can still replace the
 token's code or seize its account.
 
@@ -11,23 +16,30 @@ token's code or seize its account.
 
 ## Try it in one minute (offline, no API keys)
 
+Needs Python 3.10+. Nothing here calls the network.
+
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -e ".[api]"
-python -m rugguard demo            # results for 30+ mainnet tokens, evaluation reports, testnet guard run
-python -m rugguard demo --serve    # the same data in the web UI: http://127.0.0.1:8000
 ```
 
-`demo` restores a packed copy of a real RugGuard database (`demo/rugguard-demo.db.gz`) to
-`data/demo.db` and makes no network calls. It prints the holdout and dev-set evaluation, writes the
-per-token CSV and Markdown reports to `runs/`, and lists the testnet transactions of the guard vault.
-The pack includes the cached API responses, so stored scores can be re-computed offline:
-`RUGGUARD_DB=data/demo.db RUGGUARD_OFFLINE=1 python -m rugguard score bome.narrowcap6721.near`.
-`docker compose up --build` serves the same demo at http://127.0.0.1:8080.
+| Do | See |
+|---|---|
+| `python -m rugguard demo` | The holdout and dev-set results (rugs caught, false alarms, AUC), the three guard-vault transactions on NEAR testnet, and reports written to `runs/demo-holdout.md` and `runs/demo-dev.md` |
+| `RUGGUARD_DB=data/demo.db python -m rugguard timeline bome.narrowcap6721.near` (after `demo`) | A real rug in order: the seed of 900,000 tokens, bot round trips folded away, and the pull of 95% of the seed 25 minutes later, marked `PULL?` |
+| `RUGGUARD_DB=data/demo.db RUGGUARD_OFFLINE=1 python -m rugguard score bome.narrowcap6721.near` | The stored score re-computed from cached API responses: **90/100 HIGH**, with one plain-words reason per signal |
+| `python -m rugguard demo --serve`, then open http://127.0.0.1:8000/#bome.narrowcap6721.near | The same data in the web UI: score, signals, post-mortem, results and guard-vault panels |
+| `pip install -e ".[api,dev]" && python -m pytest -q` | 124 passing tests (offline fakes for NEAR RPC, FastNEAR, NearBlocks and Rhea) |
+| Open the transaction links printed by `demo` | On NearBlocks (testnet): the vault's `swap_refused` event with code `HIGH_RISK` and score 90; an approved swap on Rhea; a refusal with `OVER_SWAP_LIMIT` |
+
+`demo` restores a packed copy of a real Mvikeli database (`demo/rugguard-demo.db.gz`) to
+`data/demo.db`. The pack includes the cached API responses, which is why stored scores can be
+re-computed offline. `docker compose up --build` serves the same demo at http://127.0.0.1:8080.
+To score live tokens instead, see "Configuration" and run `python -m rugguard score <token>`.
 
 ## Results
 
-**Question:** using only what is visible in the first hour after launch, does RugGuard's score separate
+**Question:** using only what is visible in the first hour after launch, does Mvikeli's score separate
 NEAR memecoins that were later rugged from those that were not?
 
 **Method.** Outcome labels come from versioned rules (`outcome-rules-v2`, below), not from the score.
@@ -76,12 +88,36 @@ human reviews.
 
 `contracts/guard-vault` is a NEAR contract for the AI Security track: the AI agent holds only a
 function-call key that can call the vault's `request_swap`. Function-call keys cannot attach deposits, so
-the agent cannot swap on its own; the vault swaps for it on Rhea, and first refuses when RugGuard's posted
+the agent cannot swap on its own; the vault swaps for it on Rhea, and first refuses when Mvikeli's posted
 score is 60 or more, when no fresh score exists (fail closed), or when the swap is over the per-swap or
-daily limit. Refusals are recorded on-chain with the score and evidence. RugGuard posts scores as the
+daily limit. Refusals are recorded on-chain with the score and evidence. Mvikeli posts scores as the
 vault's oracle (`rugguard guard post-score`). Build, deploy and demo steps: `contracts/guard-vault/README.md`.
 
 Verified on testnet: the agent's request to buy a token scored 90 was refused on-chain (`HIGH_RISK`), a token scored 20 was swapped on Rhea through the vault, and a 2.5 wNEAR request over the 2 wNEAR limit was refused; transaction links are in the contract README.
+
+### What a compromised or prompt-injected agent cannot do
+
+Assume the agent's model is tricked into doing the worst it can. These are the limits, and what enforces each.
+
+| The agent tries to… | Result | Enforced by |
+|---|---|---|
+| Buy a token Mvikeli scored 60 or more | Refused on-chain, code `HIGH_RISK`, with the score and evidence | Vault; test `high_risk_token_is_refused_with_evidence`; testnet tx `iPXzqG4s…` |
+| Buy a token Mvikeli never scored | Refused, `NO_SCORE`: the vault fails closed | Vault; test `unscored_token_fails_closed` |
+| Buy on an old score (over 24 h) | Refused, `STALE_SCORE` | Vault; test `stale_score_is_refused` |
+| Spend more than 2 wNEAR at once, or 3 wNEAR in a day | Refused, `OVER_SWAP_LIMIT` / `OVER_DAILY_CAP` | Vault; test `per_swap_limit_and_daily_cap`; testnet tx `GGhmZRpM…` |
+| Post its own "safe" score | Rejected: only the oracle account may post | Vault; test `only_the_oracle_posts_scores` |
+| Raise its own limits or threshold | Rejected: only the owner may | Vault; test `agent_cannot_raise_its_own_limits` |
+| Keep trading after the owner pauses the vault | Refused, `PAUSED` | Vault; test `pause_blocks_everything` |
+| Call `ft_transfer_call` itself and swap around the vault | Impossible: its key can call only `request_swap` on the vault, and function-call keys cannot attach the 1 yoctoNEAR deposit | NEAR protocol; `rugguard keys agent.rugguard-jd.testnet` |
+| Send its NEAR away, deploy code or add a key | Impossible: the account has no full-access key | NEAR protocol; same `keys` check |
+
+A failed swap gives the daily allowance back (test `refunded_swap_returns_the_allowance`). Contract tests:
+`cd contracts/guard-vault && cargo test` (12 tests).
+
+**What this does not stop.** The vault trusts one oracle account: whoever holds its key can post any
+score. A fresh scam that the score misses (it caught 11 of 13 holdout rugs, not all) still passes, within
+the spending limits. Next steps are several independent oracles or a TEE-attested one, and scores
+refreshed automatically on new launches.
 
 ## What it checks today
 
@@ -175,7 +211,7 @@ docker compose up --build            # http://127.0.0.1:8080
 | `proxy` (Caddy) | The only published port, bound to `127.0.0.1` unless you change `RUGGUARD_BIND` | Request size and time limits, security headers, no admin API |
 | `api` | Internal network only; never published | Unprivileged user, read-only root filesystem, no Linux capabilities, no privilege escalation, memory/CPU/process limits, only the data volume is writable |
 
-**Why there is little to "partition" from meme.cooking or NEAR:** RugGuard only makes *outgoing*
+**Why there is little to "partition" from meme.cooking or NEAR:** Mvikeli only makes *outgoing*
 read-only requests to NEAR RPC, FastNEAR and NearBlocks. Nothing on the chain or on meme.cooking can
 connect to you. What needs guarding is the port you open, and the data the chain hands back:
 
@@ -233,7 +269,7 @@ token outscores a random non-rugged one. Pending, spoiled and needs-review token
 
 ## Post-mortem: what actually happened to a token
 
-RugGuard has two halves that never share inputs:
+Mvikeli has two halves that never share inputs:
 
 - **Pre-flight** (`collect`, `surface`): what was knowable about a token's risk.
 - **Post-mortem** (`outcome`): what happened next. It labels tokens by explicit, versioned rules, so evaluation labels are reproducible instead of judged by eye.
@@ -282,11 +318,11 @@ threshold with `--rules my_rules.json`; unknown keys are rejected, and every sto
 rules version. Human reviews are stored separately, and `rugguard outcomes` reports agreement.
 
 **Where history comes from.** By default, FastNEAR's Transfers API (no key needed when tested). It
-answers "transfers of account X" only, so RugGuard rebuilds a token's history from the accounts that
+answers "transfers of account X" only, so Mvikeli rebuilds a token's history from the accounts that
 matter: the Rhea pool, the launcher, the largest sellers and first-hour buyers, the current top holders
 and the wallets the launcher seeded, typically 10-40 queries per token. Each of those accounts' balances
 and peaks are then exact. NearBlocks (`--source nearblocks`) gives every transfer, but its free plan
-allows 6 calls a minute and 333 a day, with each 25 rows costing a call; RugGuard paces it and stops a
+allows 6 calls a minute and 333 a day, with each 25 rows costing a call; Mvikeli paces it and stops a
 batch cleanly when refused. `rugguard inspect <token>` summarises what is stored, without API calls.
 
 **Cost (NearBlocks):** history walks back 25 transfers per call on the free plan, cached. Older pages are kept for a year,
@@ -363,6 +399,18 @@ serves NEAR-shaped RPC, FastNEAR and NearBlocks responses from a fake transport.
 details and `/count` endpoints returned `403 "currently unavailable"` in testing, so they are off by
 default (`--stats` turns them on); an endpoint that returns that error is skipped for the rest of the run.
 With pacing, each token costs about 30–40 s of NearBlocks time; `--no-nearblocks` skips it entirely.
+
+## Built at NEAR HACKATHON: what is new, and what it uses
+
+- **All code was written during the hackathon window** (from the 19 Oct 2026 announcement to 14 Nov 2026);
+  there is no earlier baseline.
+- **NEAR parts:** the guard vault contract (Rust, `contracts/guard-vault`, deployed on testnet as
+  `vault.rugguard-jd.testnet`), the agent account with a single function-call key, NEAR RPC access-key and
+  contract-code checks, and Rhea (Ref Finance) pool analysis.
+- **Libraries:** near-sdk 5 (Rust); requests, FastAPI, uvicorn, pytest (Python); near-cli-rs and cargo-near
+  for deployment. Data: NEAR RPC, FastNEAR, NearBlocks (free API plan) and Rhea's public contract views.
+- **AI assistance:** much of the code, tests and documentation was written with Claude (Anthropic), directed
+  and checked by the author, who ran every mainnet and testnet step and hand-labelled the reviewed tokens.
 
 ## Known limits
 

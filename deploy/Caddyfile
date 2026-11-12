@@ -1,4 +1,4 @@
-# RugGuard reverse proxy. Plain HTTP on :8080 for local use; for a public demo replace
+# Mvikeli reverse proxy. Plain HTTP on :8080 for local use; for a public demo replace
 # ":8080" with your domain and Caddy obtains a TLS certificate automatically.
 {
 	admin off
