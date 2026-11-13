@@ -1,6 +1,6 @@
-# RugGuard evaluation: holdout
+# Mvikeli evaluation: holdout
 
-- Run: `20261112T112734Z` (UTC), code commit `4088066`
+- Run: `20261113T071134Z` (UTC), code commit `964ee14`
 - Command: `rugguard demo --serve`
 - Outcome rules: outcome-rules-v2; score rules: score-v2
 - Per-token data: `demo-holdout.csv` (one row per token, with rule versions, snapshot IDs and evidence)
@@ -27,7 +27,7 @@ Each simpler rule runs on the same judged tokens. A single signal flags a token 
 
 | Rule | Rugs caught | False alarms | AUC |
 |---|---|---|---|
-| **RugGuard score ≥ 60** | **11 of 13** | **0 of 5** | **0.95** |
+| **Mvikeli score ≥ 60** | **11 of 13** | **0 of 5** | **0.95** |
 | Flag every token | 13 of 13 | 5 of 5 | 0.50 |
 | Only: code can be replaced | 1 of 13 | 0 of 5 | 0.54 |
 | Only: a wallet added the liquidity | 12 of 13 | 2 of 5 | 0.76 |
